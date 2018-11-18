@@ -12,7 +12,7 @@
     "url": "git+https://github.com/windwithlifezyq/xci.git"
   },
   "keywords": [
-    "ci",
+    "cli",
     "node"
   ],
   "author": "Joe",
