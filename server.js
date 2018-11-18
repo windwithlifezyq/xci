@@ -17,10 +17,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // respond with "hello world" when a GET request is made to the homepage
 app.post('/gitPushEventXCI',function(req, res){
-    console.log(req.body);
+    //console.log(req.body);
     console.log("begin--------------")
     console.log(req.body.repository.git_url)
-    //run_cmd('sh', ['./deploy-myslef.sh'], function(text){ console.log(text) });
+    var name = req.body.repository.name;
+    var git_url = req.body.repository.git_url;
+    var clone_url = req.body.repository.clone_url;
+    var ssh_url = req.body.repository.ssh_url;
+    run_cmd('sh', ['./deploy-project.sh',name,clone_url], function(text){ console.log(text) });
     res.status(200);
     //res.send('ok');
     res.end();
