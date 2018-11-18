@@ -20,6 +20,7 @@ app.post('/gitPushEventXCI',function(req, res){
     console.log(req.body);
     run_cmd('sh', ['./deploy-myslef.sh'], function(text){ console.log(text) });
     res.status(200);
+    res.send('ok');
     res.end();
 
 })
