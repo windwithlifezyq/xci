@@ -14,5 +14,5 @@ git clone https://github.com/windwithlife/coder.git
 #npm install
 #npm run dev
 ######npm run start
-echo "Finished"
+echo "Finished."
 
