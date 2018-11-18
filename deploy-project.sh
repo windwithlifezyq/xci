@@ -1,8 +1,8 @@
 #!/bin/bash
 
 echo "Start deployment"
-WEB_PATH='/Users/ctrip/'
-TARGET_PATH = $WEB_PATH/autoRelease/
+WEB_PATH='../autoRelease'
+TARGET_PATH = $WEB_PATH
 
 cd $TARGET_PATH
 touch test.txt
