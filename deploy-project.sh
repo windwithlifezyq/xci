@@ -5,7 +5,7 @@ WEB_PATH='../autoRelease'
 TARGET_PATH = $WEB_PATH
 
 cd $TARGET_PATH
-touch testnew.txt
+touch test.txt
 echo "pulling source code..."
 #git reset --hard origin/master
 git clone https://github.com/windwithlife/coder.git
