@@ -15,3 +15,4 @@ git clone https://github.com/windwithlife/coder.git
 #npm run dev
 ######npm run start
 echo "Finished"
+
