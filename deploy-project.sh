@@ -8,7 +8,7 @@ cd $TARGET_PATH
 touch test.txt
 echo "pulling source code..."
 #git reset --hard origin/master
-#git clone https://github.com/windwithlife/coder.git
+git clone https://github.com/windwithlife/coder.git
 #cd ./coder
 #git checkout master
 #npm install
