@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.post('/gitPushEventXCI',function(req, res){
     console.log(req.body);
     console.log("begin--------------")
-    console.log(req.body.repository);
+    console.log(req.body.repository)
     //run_cmd('sh', ['./deploy-myslef.sh'], function(text){ console.log(text) });
     res.status(200);
     //res.send('ok');
