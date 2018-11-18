@@ -1,0 +1,27 @@
+{
+  "name": "xci",
+  "version": "1.0.0",
+  "description": "基于node,next.js,react的自动化持续集成项目",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/windwithlifezyq/xci.git"
+  },
+  "keywords": [
+    "ci",
+    "node"
+  ],
+  "author": "Joe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/windwithlifezyq/xci/issues"
+  },
+  "homepage": "https://github.com/windwithlifezyq/xci#readme",
+  "devDependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
+}
