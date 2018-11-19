@@ -45,7 +45,7 @@ app.post('/gitPushEventProject/',function(req, res){
         console.log(params)
     }
 
-    fs.exists("../autoRelease/coder/.git", function(exists){
+    fs.exists("../autoRelease1/coder/.git", function(exists){
         if (exists){
             console.log("just git pull")
             //run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
