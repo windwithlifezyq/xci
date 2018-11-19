@@ -15,7 +15,7 @@ function run_cmd(cmd, args, callback) {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// respond with "hello world" when a GET request is made to the homepage
+
 app.post('/gitPushEventXCI',function(req, res){
     //console.log(req.body);
     console.log("begin re-deploy myself-------------")
