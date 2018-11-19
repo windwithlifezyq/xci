@@ -11,10 +11,11 @@ echo "pulling source code..."
 #git reset --hard origin/master
 git clone https://github.com/windwithlife/coder.git
 cd ./coder
-touch testx.txt
+touch testxxx.txt
 #git checkout master
-#npm install
-#npm run dev
+npm install
+kill -9 $(lsof -i:3000 |awk '{print $2}' | tail -n 2)
+npm run devx
 ######npm run start
 echo "Finished."
 

@@ -18,13 +18,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // respond with "hello world" when a GET request is made to the homepage
 app.post('/gitPushEventXCI',function(req, res){
     //console.log(req.body);
-    console.log("begin--------------")
+    console.log("begin re-deploy myself-------------")
     //console.log(req.body.repository.git_url)
     //var name = req.body.repository.name;
     //var git_url = req.body.repository.git_url;
     //var clone_url = req.body.repository.clone_url;
     //var ssh_url = req.body.repository.ssh_url;
-    run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
+    run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
     res.status(200);
     //res.send('ok');
     res.end();
@@ -41,5 +41,5 @@ app.get('/', function (req, res) {
   `)
 })
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'))
+app.listen(3333, () => console.log('Example app listening on port 3000!'))
 
