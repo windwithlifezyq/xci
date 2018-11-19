@@ -36,7 +36,7 @@ app.post('/gitPushEventProject/',function(req, res){
 
     console.log("begin deploy project-------------")
     //console.log(req.body.repository.git_url)
-    var params = {};
+    var params = {name:"coder"};
     if (req.body.repository){
         params.name = req.body.repository.name;
         params.git_url = req.body.repository.git_url;
@@ -45,7 +45,9 @@ app.post('/gitPushEventProject/',function(req, res){
         console.log(params)
     }
 
-    fs.exists("../autoRelease1/coder/.git", function(exists){
+    var project_name = params.name;
+    var project_dir = "../autoRelease/" + project_name + "/.git";
+    fs.exists(project_dir, function(exists){
         if (exists){
             console.log("just git pull")
             //run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
