@@ -21,21 +21,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.post('/gitPushEventXCI',function(req, res){
     //console.log(req.body);
     console.log("begin re-deploy myself-------------")
-    //console.log(req.body.repository.git_url)
-    //var name = req.body.repository.name;
-    //var git_url = req.body.repository.git_url;
-    //var clone_url = req.body.repository.clone_url;
-    //var ssh_url = req.body.repository.ssh_url;
     run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
     res.status(200);
-    //res.send('ok');
     res.end();
 
 })
 app.post('/gitPushEventProject/',function(req, res){
 
     console.log("begin deploy project-------------")
-    //console.log(req.body.repository.git_url)
     var params = {name:"coder"};
     if (req.body.repository){
         params.name = req.body.repository.name;
@@ -50,10 +43,10 @@ app.post('/gitPushEventProject/',function(req, res){
     fs.exists(project_dir, function(exists){
         if (exists){
             console.log("just git pull")
-            //run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
+            run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
         }else{
             console.log("must clone")
-            //run_cmd('sh', ['./deploy-new-project.sh'], function(text){ console.log(text) });
+            run_cmd('sh', ['./deploy-new-project.sh'], function(text){ console.log(text) });
         }
     })
 
