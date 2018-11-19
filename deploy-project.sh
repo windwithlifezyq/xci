@@ -10,8 +10,9 @@ cd ./coder
 #git checkout master
 npm install
 kill -9 $(lsof -i:3000 |awk '{print $2}' | tail -n 2)
-npm run devx
+
 touch .git/cloneflag.flag
+npm run devx
 echo "Finished!!!!."
 
 
