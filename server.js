@@ -1,7 +1,7 @@
 var bodyParser = require('body-parser');
 var express = require('express')
 var app = express();
-
+var fs= require(“fs”)
 
 function run_cmd(cmd, args, callback) {
     var spawn = require('child_process').spawn;
@@ -35,12 +35,25 @@ app.post('/gitPushEventProject/',function(req, res){
     console.log("begin deploy project-------------")
     //console.log(req.body.repository.git_url)
     var params = {};
-    //params.name = req.body.repository.name;
-    //params.git_url = req.body.repository.git_url;
-    //params.clone_url = req.body.repository.clone_url;
-    //params.ssh_url = req.body.repository.ssh_url;
-    //console.log(params)
-    run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
+    if (req.body.repository){
+        params.name = req.body.repository.name;
+        params.git_url = req.body.repository.git_url;
+        params.clone_url = req.body.repository.clone_url;
+        params.ssh_url = req.body.repository.ssh_url;
+        console.log(params)
+    }
+
+    fs.exists("../autoRelease/coder/.git", function(exists){
+        if (exists){
+            console.log("just git pull")
+            //run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
+        }else{
+            console.log("must clone")
+            //run_cmd('sh', ['./deploy-new-project.sh'], function(text){ console.log(text) });
+        }
+    })
+
+
     res.status(200);
     res.end();
 
