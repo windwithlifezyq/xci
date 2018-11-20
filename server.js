@@ -19,7 +19,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.post('/gitPushEventXCI',function(req, res){
-    //console.log(req.body);
     console.log("begin re-deploy myself-------------")
     run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
     res.status(200);
@@ -50,20 +49,12 @@ app.post('/gitPushEventProject/',function(req, res){
         }
     })
 
-
     res.status(200);
     res.end();
 
 })
 app.get('/', function (req, res) {
-  res.send(`
-    <html>
-      <head></head>
-      <body>
-         <h1>hello world11111<h1>
-      </body>
-    </html>
-  `)
+  res.send('Hello,world!')
 })
 
 app.listen(3333, () => console.log('Example app listening on port 3333!'))
