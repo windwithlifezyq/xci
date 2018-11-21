@@ -1,6 +1,8 @@
 var bodyParser = require('body-parser');
 var express = require('express')
 var fs= require('fs')
+var gitTools = require('./git-tool');
+var dockerTools = require('./docker-tool');
 
 var app = express();
 
@@ -20,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/gitPushEventXCI',function(req, res){
     console.log("begin re-deploy myself-------------")
-    run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
+    //run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
     res.status(200);
     res.end();
 
@@ -31,23 +33,24 @@ app.post('/gitPushEventProject/',function(req, res){
     var params = {name:"coder"};
     if (req.body.repository){
         params.name = req.body.repository.name;
-        params.git_url = req.body.repository.git_url;
-        params.clone_url = req.body.repository.clone_url;
-        params.ssh_url = req.body.repository.ssh_url;
+        params.gitUrl = req.body.repository.git_url;
+        params.cloneUrl = req.body.repository.clone_url;
+        params.sshUrl = req.body.repository.ssh_url;
         console.log(params)
     }
 
-    var project_name = params.name;
-    var project_dir = "../autoRelease/" + project_name + "/.git";
-    fs.exists(project_dir, function(exists){
-        if (exists){
-            console.log("just git pull")
-            run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
+    var result = gitTools.fetchSourceFromGit(params.name,params.cloneUrl,'master');
+    if (result){
+        let envName = "dev";
+        if(params.name =='coder'){
+            dockerTools.makeImageAndRun(params.name + "_web",envName,"",3000);
+            dockerTools.makeImageAndRun(params.name + "_server",envName,"./files/server/simpleserver/",8080);
         }else{
-            console.log("must clone")
-            run_cmd('sh', ['./deploy-new-project.sh'], function(text){ console.log(text) });
+            dockerTools.makeImageAndRun(params.name,envName,"./",serverPort);
         }
-    })
+    }else{
+        console.log('failed to process release,root case: git fetch a failure!')
+    }
 
     res.status(200);
     res.end();
