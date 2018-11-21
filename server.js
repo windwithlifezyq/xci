@@ -5,7 +5,7 @@ var gitTools = require('./git-tool');
 var dockerTools = require('./docker-tool');
 
 var app = express();
-
+console.log(new Date().toLocaleString());
 
 function run_cmd(cmd, args, callback) {
     var spawn = require('child_process').spawn;
