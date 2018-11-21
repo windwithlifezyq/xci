@@ -37,10 +37,13 @@ function buildDockerImage(dockerName,envName,dockerfilePath) {
 function runDockerImage(dockerName,envName,mapPort){
     let imageName = dockerName + ":" + envName;
     let containerName = dockerName +"_" +  envName;
-    let stopContainerCommand = "docker stop " + containerName;
-    let removeContainerCommand = "docker rm " + containerName;
+    let stopContainerCommand = 'docker stop ' + containerName;
+    let removeContainerCommand = 'docker rm ' + containerName;
     let runCommand = 'docker run -d ' + imageName + ' --name ' +  containerName + ' -p ' + mapPort + ":" + mapPort;
 
+    console.log(stopContainerCommand);
+    console.log(stopContainerCommand);
+    console.log(runCommand);
     exec(stopContainerCommand);
     exec(removeContainerCommand);
     if (exec(runCommand).code !== 0){
