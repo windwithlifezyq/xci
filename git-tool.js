@@ -66,7 +66,7 @@ function fetch_project_src(project_name, url, branch) {
 
     return true;
 }
-//test();
+
 
 module.exports = {
     fetchSourceFromGit: fetch_project_src,

@@ -38,6 +38,7 @@ app.post('/gitPushEventXCI',function(req, res){
 app.post('/gitPushEventProject/:serverPort',function(req, res){
 
     console.log("begin deploy project-------------")
+    console.log('current directory is:' + process.cwd());
     var params = {name:"coder"};
     if (req.body.repository){
         params.name = req.body.repository.name;
