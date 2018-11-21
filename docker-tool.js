@@ -39,7 +39,7 @@ function runDockerImage(dockerName,envName,mapPort){
     let containerName = dockerName +"_" +  envName;
     let stopContainerCommand = "docker stop " + containerName;
     let removeContainerCommand = "docker rm " + containerName;
-    let runCommand = "docker run -d " + imageName + "--name" +  containerName + "-p " + mapPort + ":" + mapPort;
+    let runCommand = 'docker run -d ' + imageName + ' --name ' +  containerName + ' -p ' + mapPort + ":" + mapPort;
 
     exec(stopContainerCommand);
     exec(removeContainerCommand);

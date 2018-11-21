@@ -28,7 +28,7 @@ app.post('/gitPushEventXCI',function(req, res){
     res.end();
 
 })
-app.post('/gitPushEventProject/',function(req, res){
+app.post('/gitPushEventProject/:serverPort',function(req, res){
 
     console.log("begin deploy project-------------")
     var params = {name:"coder"};
