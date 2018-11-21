@@ -3,6 +3,7 @@ var express = require('express')
 var fs= require('fs')
 var gitTools = require('./git-tool');
 var dockerTools = require('./docker-tool');
+var shellTools  = require('./shell-tool');
 
 var app = express();
 console.log(new Date().toLocaleString());
@@ -23,7 +24,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.post('/gitPushEventXCI',function(req, res){
     console.log("begin re-deploy myself-------------")
     var result = gitTools.gitPull();
-    run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
+    if (shellTools.installPackages()){
+        run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
+    }else{
+        console.log('failed to auto release xci project!!');
+    }
+
     res.status(200);
     res.end();
 
