@@ -22,8 +22,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/gitPushEventXCI',function(req, res){
     console.log("begin re-deploy myself-------------")
-    //run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
     var result = gitTools.pullSource();
+    run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
     res.status(200);
     res.end();
 
