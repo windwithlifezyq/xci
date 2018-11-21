@@ -36,8 +36,12 @@ function installNPMPackages (){
     }
 
 }
+function cdDirectory(dir){
+    cd(dir)
+}
 
 module.exports = {
     restartNPM: restartNPM,
-    installPackages: installNPMPackages
+    installPackages: installNPMPackages,
+    "cd":cdDirectory
 }

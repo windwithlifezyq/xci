@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/gitPushEventXCI',function(req, res){
     console.log("begin re-deploy myself-------------")
+    let originDirectory = process.cwd();
     var result = gitTools.gitPull();
     if (shellTools.installPackages()){
         console.log('begin to restart XCI server just now!')
@@ -31,14 +32,18 @@ app.post('/gitPushEventXCI',function(req, res){
         console.log('failed to auto release xci project!!');
     }
 
+    shellTools.cd(originDirectory);
     res.status(200);
     res.end();
 
 })
 app.post('/gitPushEventProject/:serverPort',function(req, res){
 
+
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
+
+    let originDirectory = process.cwd();
     var params = {name:"coder"};
     if (req.body.repository){
         params.name = req.body.repository.name;
@@ -61,6 +66,7 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
         console.log('failed to process release,root case: git fetch a failure!')
     }
 
+    shellTools.cd(originDirectory);
     res.status(200);
     res.end();
 
