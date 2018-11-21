@@ -15,10 +15,35 @@ function test() {
     console.log(checkDir);
 }
 
+function cloneSource(url){
+    let gitCloneCommand = 'git clone ' + url;
+    if (exec(gitCloneCommand).code !== 0) {
+        echo('Error: Git clone failed');
+        return false
+    }else{
+        return true;
+    }
+}
+function pullSource (){
+    if (!which('git')) {
+        echo('Sorry, this script requires git');
+        return;
+    }
+    let gitResetCommand = 'git reset --hard origin/master';
+    let gitPullCommand = 'git pull';
+
+    exec(gitResetCommand);
+    if (exec(gitPullCommand).code !== 0) {
+        echo('Error: Git pull failed');
+        return false;
+    }
+
+}
 function fetch_project_src(project_name, url, branch) {
 
     if (!which('git')) {
         echo('Sorry, this script requires git');
+        return;
     }
 
     var release_directory = "../autoRelease/" + project_name;
@@ -26,31 +51,25 @@ function fetch_project_src(project_name, url, branch) {
 
     if (isExist) {
         cd(release_directory);
-        let gitResetCommand = 'git reset --hard origin/master';
-        let gitPullCommand = 'git pull';
+        pullSource();
 
-        exec(gitResetCommand);
-        if (exec(gitPullCommand).code !== 0) {
-            echo('Error: Git pull failed');
-            return false;
-        }
-        //run_cmd('sh', ['./deploy-project.sh'], function(text){ console.log(text) });
     } else {
         init_release_directory();
         cd(RELEASE_BASE_PATH);
-        let gitCloneCommand = 'git clone ' + url;
-        if (exec(gitCloneCommand).code !== 0) {
-            echo('Error: Git clone failed');
-            return false
-        }else{
+        if (cloneSource(url)){
             cd(release_directory);
+        }else{
+            console.log('failed to clone project:' + project_name);
+            return false;
         }
     }
 
     return true;
 }
-test();
+//test();
 
 module.exports = {
-    fetchSourceFromGit: fetch_project_src
+    fetchSourceFromGit: fetch_project_src,
+    gitPull:pullSource,
+    gitClone:cloneSource
 }
