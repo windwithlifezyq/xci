@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/gitPushEventXCI',function(req, res){
     console.log("begin re-deploy myself-------------")
-    var result = gitTools.pullSource();
+    var result = gitTools.gitPull();
     run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
     res.status(200);
     res.end();
