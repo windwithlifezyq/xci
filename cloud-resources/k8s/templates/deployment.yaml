@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8sApp: default-deployment
+  name: default-app
+  namespace: default
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8sApp: default-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8sApp: default-app
+    spec:
+      containers:
+      - args:
+        - --apiserver-host=http://172.27.0.12:8080
+        image: docker.io/test-default:v1.1.1
+        imagePullPolicy: IfNotPresent
+        name: default-app
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

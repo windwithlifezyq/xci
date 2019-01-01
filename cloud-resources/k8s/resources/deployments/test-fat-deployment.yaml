@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8sApp: test-fat
+  name: test-fat
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8sApp: default-app
+    k8sApp: test-fat
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8sApp: test-fat
+      name: test-fat
+    spec:
+      containers:
+        - args:
+            - '--apiserver-host=http://172.27.0.12:8080'
+          image: 'test-soa:fat'
+          imagePullPolicy: IfNotPresent
+          name: default-app
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+--------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-fat
+  namespace: default
+  labels:
+    k8sApp: test-fat
+spec:
+  selector:
+    k8sApp: test-fat
+  ports:
+    - port: 8080
+      targetPort: 8080
