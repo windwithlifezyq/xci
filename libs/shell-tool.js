@@ -1,11 +1,12 @@
 /**
  * Created by Joe on 2018/11/21.
  */
-
+var envConfig = require('./env-config')
 require('shelljs/global');
 
 
 function restartNPM (port){
+    cd(envConfig.getServerRootPath());
     console.log( "Start restart  server myself")
     let startNPM = "kill -9 $(lsof -i:" + port + "|awk '{print $2}' | tail -n 2) && npm run start";
     if (exec(startNPM).code !== 0) {
