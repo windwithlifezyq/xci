@@ -37,7 +37,11 @@ app.post('/gitPushEventXCI',function(req, res){
     if (shellTools.installPackages()){
         console.log('begin to restart XCI server just now!')
         //run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
-        shellTools.exec('npm restart dev');
+        let commandstring = 'npm restart dev';
+        console.log("begin to restart server");
+        if (shellTools.exec(commandstring).code !== 0) {
+            console.log('failed to restart! COMMAND:' + commandstring)
+        }
 
     }else{
         console.log('failed to auto release xci project!!');
