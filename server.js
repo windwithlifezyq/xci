@@ -80,6 +80,7 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
             //dockerTools.makeImageAndRun(params.name + "_web",envName,"",3000);
             //dockerTools.makeImageAndRun(params.name + "_server",envName,"./files/server/simpleserver/",8080);
             dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/simpleserver/");
+            dockerTools.release2K8sCloud(params.name,params.label,params.type);
         }else{
             //dockerTools.makeImageAndRun(params.name,envName,"./",serverPort);
         }

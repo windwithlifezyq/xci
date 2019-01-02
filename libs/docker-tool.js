@@ -21,10 +21,7 @@ function buildDockerImage(dockerName,envName,dockerfilePath) {
         cd(dockerfilePath)
     }
 
-    //var isExist = fs.existsSync(release_directory);
 
-    //if (isExist) {
-        //cd(release_directory);
         let imageName = dockerName + ":" + envName
         let buldCommand = 'docker build . -f ./Dockerfile -t ' + imageName ;
         if (exec(buldCommand).code !== 0) {
@@ -32,11 +29,6 @@ function buildDockerImage(dockerName,envName,dockerfilePath) {
         }else{
             console.log('sucessful to build image');
         }
-        //exec(gitResetCommand);
-    //} else {
-     //  console.log('Could not find source code!!!');
-    //}
-
 
 }
 function getDockerFileByParams(lang,type) {
@@ -58,9 +50,9 @@ function buildServiceDockerImage(name,label,lang,type,dockerfilePath) {
     console.log('Docker image build command:' + buldCommand)
     console.log('Docker image build env:' + process.cwd());
     if (exec(buldCommand).code !== 0) {
-        console.log('failed to build docker image:' + imageName)
+        console.log('failed to build docker image! IMAGE NAME:[' + imageName +']');
     }else{
-        console.log('sucessful to build image');
+        console.log('sucessful to build image! IMAGE NAME:[' + imageName +']');
     }
 }
 function runDockerImage(dockerName,envName,mapPort){
