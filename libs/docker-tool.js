@@ -129,7 +129,7 @@ function createK8sOperationFiles(serviceName,imageName){
 
     var contentTextDeployment = fs.readFileSync(tempDeployFile,'utf-8');
     var contentTextService = fs.readFileSync(tempServiceFile,'utf-8');
-    var contentSplitLine = "--------------\r\n"
+    var contentSplitLine = "--------------\n"
 
     rm(finalDeploymentFileName);
     rm(tempDeployFile);
@@ -164,7 +164,7 @@ function releaseService2Cloud(serviceName,imageName){
 
 function release2K8sCloud(name,labelName,type) {
     let imageName = getDockerImageName(name,labelName,type);
-    let serviceName  = getServiceName(name,labelName, type);
+    let serviceName  = getServiceName(name, type);
     createK8sOperationFiles(serviceName,imageName);
     releaseService2Cloud(serviceName,imageName);
 }

@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.post('/gitPushEventXCI',function(req, res){
-    shellTools.cd(envConfig.getServerRootPath);
+    shellTools.cd(envConfig.getServerRootPath());
     console.log("begin re-deploy myself-------------")
     let originDirectory = process.cwd();
     var result = gitTools.gitPull();
@@ -33,14 +33,14 @@ app.post('/gitPushEventXCI',function(req, res){
     }else{
         console.log('failed install xci project npm dependences!');
     }
-    shellTools.cd(envConfig.getServerRootPath);
+    shellTools.cd(envConfig.getServerRootPath());
     res.status(200);
     res.end();
 
 })
 app.post('/gitPushEventProject/:serverPort',function(req, res){
 
-    shellTools.cd(envConfig.getServerRootPath);
+    shellTools.cd(envConfig.getServerRootPath());
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
 
@@ -80,7 +80,7 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
     }else{
         console.log('failed to process release,root case: git fetch a failure!')
     }
-    shellTools.cd(envConfig.getServerRootPath);
+    shellTools.cd(envConfig.getServerRootPath());
     res.status(200);
     res.end();
 
