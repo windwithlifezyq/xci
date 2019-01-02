@@ -23,6 +23,20 @@ function restartNPM (port){
 
 }
 
+function restartServer (){
+    console.log( "Restarting  server myself");
+    let startCommand = 'npm restart start';
+    if (exec(startCommand).code !== 0) {
+        console.log('failed to restart! COMMAND:' + startCommand)
+        return false;
+    }else{
+        console.log('sucessful to restart! COMMAND:' + startCommand)
+        return true;
+    }
+
+}
+
+
 function installNPMPackages (){
     console.log( "Start install NPM relatived packages!")
     let installPackages = 'npm install';
@@ -42,6 +56,7 @@ function cdDirectory(dir){
 
 module.exports = {
     restartNPM: restartNPM,
+    restartServer:restartServer,
     installPackages: installNPMPackages,
     "cd":cdDirectory
 }

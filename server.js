@@ -35,16 +35,13 @@ app.post('/gitPushEventXCI',function(req, res){
     let originDirectory = process.cwd();
     var result = gitTools.gitPull();
     if (shellTools.installPackages()){
-        console.log('begin to restart XCI server just now!')
-        //run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
-        let commandstring = 'npm restart dev';
-        console.log("begin to restart server and current ENV:" + process.cwd());
-        if (shellTools.exec(commandstring).code !== 0) {
-            console.log('failed to restart! COMMAND:' + commandstring)
+        //console.log('begin to restart XCI server just now!')
+        if (!shellTools.restartServer()) {
+            console.log('failed to restart!')
         }
 
     }else{
-        console.log('failed to auto release xci project!!');
+        console.log('failed install xci project npm dependences!');
     }
 
     shellTools.cd(originDirectory);
