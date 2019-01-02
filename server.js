@@ -38,7 +38,7 @@ app.post('/gitPushEventXCI',function(req, res){
         console.log('begin to restart XCI server just now!')
         //run_cmd('sh', ['./deploy-self.sh'], function(text){ console.log(text) });
         let commandstring = 'npm restart dev';
-        console.log("begin to restart server");
+        console.log("begin to restart server and current ENV:" + process.cwd());
         if (shellTools.exec(commandstring).code !== 0) {
             console.log('failed to restart! COMMAND:' + commandstring)
         }
