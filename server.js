@@ -4,19 +4,10 @@ var fs= require('fs')
 var gitTools = require('./libs/git-tool');
 var dockerTools = require('./libs/docker-tool');
 var shellTools  = require('./libs/shell-tool');
+var envConfig   = require('./libs/env-config');
 
 var app = express();
 console.log(new Date().toLocaleString());
-
-class Test{
-    myfunc(){
-        console.log('in myfunc');
-    }
-}
-let cls = Test;
-let obj = new Test();
-console.log('class name:' + cls.name + 'obj name:' + obj.name + obj.myfunc.name);
-
 function run_cmd(cmd, args, callback) {
     var spawn = require('child_process').spawn;
     var child = spawn(cmd, args);
@@ -41,14 +32,12 @@ app.post('/gitPushEventXCI',function(req, res){
     }else{
         console.log('failed install xci project npm dependences!');
     }
-
     shellTools.cd(originDirectory);
     res.status(200);
     res.end();
 
 })
 app.post('/gitPushEventProject/:serverPort',function(req, res){
-
 
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
@@ -83,12 +72,13 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
             dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/simpleserver/");
             dockerTools.release2K8sCloud(params.name,params.label,params.type);
         }else{
-            //dockerTools.makeImageAndRun(params.name,envName,"./",serverPort);
+            dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/simpleserver/");
+            dockerTools.release2K8sCloud(params.name,params.label,params.type);
         }
     }else{
         console.log('failed to process release,root case: git fetch a failure!')
     }
-    shellTools.cd(originDirectory);
+    shellTools.cd(envConfig.getServerRootPath);
     res.status(200);
     res.end();
 

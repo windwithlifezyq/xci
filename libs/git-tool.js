@@ -4,16 +4,15 @@
 
 require('shelljs/global');
 var fs = require('fs')
-var RELEASE_BASE_PATH = "../autoRelease/";
+var path= require('path')
+var envConfig = require('./env-config');
+var RELEASE_BASE_PATH = envConfig.getAutoReleaseResBasePath();
 
 
 function init_release_directory() {
     mkdir('-p', RELEASE_BASE_PATH);
 }
-function test() {
-    var checkDir = fs.existsSync('../autoRele/');
-    console.log(checkDir);
-}
+
 
 function cloneSource(url){
     let gitCloneCommand = 'git clone ' + url;
@@ -46,7 +45,7 @@ function fetch_project_src(project_name, url, branch) {
         return;
     }
 
-    var release_directory = "../autoRelease/" + project_name;
+    var release_directory = path.join(RELEASE_BASE_PATH,project_name);
     var isExist = fs.existsSync(release_directory);
 
     if (isExist) {

@@ -6,10 +6,7 @@ require('shelljs/global');
 yaml = require('node-yaml');
 var fs = require('fs');
 var path = require('path');
-var RELEASE_BASE_PATH = "../autoRelease/";
-var RELEASE_DOCKERFILE_PATH = path.join(process.cwd(),"./cloud-resources/dockerfiles/");
-var K8S_RESOURCE_TEMPLATE_PATH = path.join(process.cwd(),'./cloud-resources/k8s/templates/');
-var K8S_RESOURCE_DEPLOYMENT_PATH = path.join(process.cwd(),'./cloud-resources/k8s/resources/deployments/');
+var evnConfig = require('./env-config');
 
 function test() {
     var checkDir = fs.existsSync('../autoRele/');
@@ -42,7 +39,7 @@ function buildServiceDockerImage(name,label,lang,type,dockerfilePath) {
     let dockerFileName = getDockerFileByParams(lang,type);
     let imageName  = getDockerImageName(name,label,type);
 
-    let dockerFileSource = RELEASE_DOCKERFILE_PATH + dockerFileName;
+    let dockerFileSource = evnConfig.getReleaseDockerFilePath() + dockerFileName;
     let dockerFileDestPath = './' ;
     cp(dockerFileSource,dockerFileDestPath);
 
@@ -98,18 +95,17 @@ function createK8sOperationFiles(serviceName,imageName){
 
     let currentPath = process.cwd();
     console.log(currentPath);
-    let templateFilePath = path.join(currentPath,'./cloud-resources/k8s/templates/');
+    let templateFilePath =evnConfig.getDeploymentTemplatePath();
 
     let deploymentTemplate = templateFilePath + 'deployment.yaml';
     let serviceTemplate = templateFilePath + 'service.yaml';
 
-    let deployServiceFile = path.join(currentPath,"./cloud-resources/k8s/resources/deployments/") +  serviceName;
+    let deployServiceFile = evnConfig.getDeploymentResourcesPath() +  serviceName;
 
     let tempDeployFile = deployServiceFile + "-deploy.yaml"
     let tempServiceFile = deployServiceFile + "-service.yaml"
-
     let finalDeploymentFileName = deployServiceFile +'-deployment.yaml';
-    console.log("deploy template" + deploymentTemplate);
+    console.log("Deploy template" + deploymentTemplate);
 
 
 
@@ -150,7 +146,7 @@ function releaseService2Cloud(serviceName,imageName){
 
     let currentPath = process.cwd();
     console.log(currentPath);
-    let deployServicePath = path.join(currentPath,"./cloud-resources/k8s/resources/deployments/");
+    let deployServicePath =  evnConfig.getDeploymentResourcesPath();
     let finalDeploymentFileName = deployServicePath + serviceName +'-deployment.yaml';
 
     let runUnDeployCommand = 'kubectl delete -f  ' + finalDeploymentFileName;
