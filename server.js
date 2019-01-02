@@ -35,10 +35,8 @@ app.post('/gitPushEventXCI',function(req, res){
     let originDirectory = process.cwd();
     var result = gitTools.gitPull();
     if (shellTools.installPackages()){
-        //console.log('begin to restart XCI server just now!')
-        if (!shellTools.restartServer()) {
-            console.log('failed to restart!')
-        }
+
+        shellTools.restartServer()
 
     }else{
         console.log('failed install xci project npm dependences!');
@@ -90,7 +88,6 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
     }else{
         console.log('failed to process release,root case: git fetch a failure!')
     }
-
     shellTools.cd(originDirectory);
     res.status(200);
     res.end();
