@@ -112,7 +112,7 @@ function createK8sOperationFiles(serviceName,imageName){
     let deploy = yaml.readSync(deploymentTemplate, {encoding: "utf8",schema: yaml.schema.defaultSafe})
     deploy.metadata.name = serviceName;
     deploy.metadata.labels.k8sApp = serviceName;
-    deploy.spec.selector.k8sApp = serviceName;
+    deploy.spec.selector.matchLabels.k8sApp = serviceName;
     deploy.spec.template.metadata.name= serviceName;
     deploy.spec.template.metadata.labels.k8sApp= serviceName;
     deploy.spec.template.spec.containers[0].image= imageName;
