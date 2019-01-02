@@ -129,7 +129,7 @@ function createK8sOperationFiles(serviceName,imageName){
 
     var contentTextDeployment = fs.readFileSync(tempDeployFile,'utf-8');
     var contentTextService = fs.readFileSync(tempServiceFile,'utf-8');
-    var contentSplitLine = "--------------\n"
+    var contentSplitLine = "\n---\n\n"
 
     rm(finalDeploymentFileName);
     rm(tempDeployFile);
