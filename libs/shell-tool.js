@@ -29,7 +29,6 @@ function restartServer (){
         console.log('sucessful to restart! COMMAND:' + startCommand)
         return true;
     }
-
 }
 
 
