@@ -101,11 +101,14 @@ function createK8sOperationFiles(serviceName,imageName){
     let serviceTemplate = templateFilePath + 'service.yaml';
 
     let deployServiceFile = evnConfig.getDeploymentResourcesPath() +  serviceName;
-
+     if(exec('mkdir -p ' + evnConfig.getDeploymentResourcesPath()).code !==0){
+        console.log('failed to mkdir' + evnConfig.getDeploymentResourcesPath());
+     }
+     //if (exec(gitCloneCommand).code !== 0) 
     let tempDeployFile = deployServiceFile + "-deploy.yaml"
     let tempServiceFile = deployServiceFile + "-service.yaml"
     let finalDeploymentFileName = deployServiceFile +'-deployment.yaml';
-    console.log("Deploy template" + deploymentTemplate);
+    console.log("Deploy template:\r\n" + deploymentTemplate);
 
 
 
@@ -118,6 +121,7 @@ function createK8sOperationFiles(serviceName,imageName){
     deploy.spec.template.spec.containers[0].image= imageName;
     console.log(JSON.stringify(deploy));
     yaml.writeSync(tempDeployFile,deploy,"utf8");
+
 
     console.log("service template" + serviceTemplate);
     let service = yaml.readSync(serviceTemplate, {encoding: "utf8",schema: yaml.schema.defaultSafe})

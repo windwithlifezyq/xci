@@ -91,7 +91,9 @@ app.get('/', function (req, res) {
 
 
 app.get('/test', function (req, res) {
-    dockerTools.release2K8sCloud('test','fat','soa');
+    //dockerTools.releasdockerTools.release2K8sCloud(params.name,params.label,params.type);
+    dockerTools.release2K8sCloud("coder","latest","soa");
+    
     res.send('Hello,world! test!');
 })
 process.on('uncaughtException', function (err) {
