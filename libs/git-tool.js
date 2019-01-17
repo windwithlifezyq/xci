@@ -18,8 +18,10 @@ function cloneSource(url){
     let gitCloneCommand = 'git clone ' + url;
     if (exec(gitCloneCommand).code !== 0) {
         echo('Error: Git clone failed');
+        console.log('failed to gie clone project!, clone command:' + gitCloneCommand);
         return false
     }else{
+        console.log('successful to gie clone project!, clone command:' + gitCloneCommand);
         return true;
     }
 }

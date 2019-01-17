@@ -46,7 +46,7 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
 
     let originDirectory = process.cwd();
     //let targetPath = './';
-    var params = {targetPath:'./',name:"coder",lang:'java',type:'soa',label:'latest',cloneUrl:'test'};
+    var params = {targetPath:'./',name:"coder",lang:'java',type:'soa',label:'v1',cloneUrl:'https://github.com/windwithlife/coder.git'};
     if(req.query.targetPath) {
         params.targetPath = req.query.targetPath;
     }

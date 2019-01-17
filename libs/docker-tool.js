@@ -47,8 +47,7 @@ function buildServiceDockerImage(name,label,lang,type,dockerfilePath) {
     console.log('Docker image build command:' + buldCommand)
     console.log('Docker image build env:' + process.cwd());
     if (exec(buldCommand).code !== 0) {
-        console.log('failed to build docker image! IMAGE NAME:[' + imageName +']');
-    }else{
+        console.log('failed to build docker image! IMAGE NAME:[' + imageName +']');    }else{
         console.log('sucessful to build image! IMAGE NAME:[' + imageName +']');
     }
 }

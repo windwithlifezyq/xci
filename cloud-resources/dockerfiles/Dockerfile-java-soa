@@ -7,7 +7,7 @@ RUN cd /tmp/build && mvn -q dependency:resolve
 ADD src /tmp/build/src
 RUN mkdir -p /runDIR/
       
-RUN cd /tmp/build && mvn -q -DskipTests=true  package \
+RUN cd /tmp/build && mvn  -DskipTests=true  package \
        
         && mv target/*.jar /runDIR/app.jar \
       
