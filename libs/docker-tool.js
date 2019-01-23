@@ -44,7 +44,7 @@ function compileSourceCode(name,label,lang,type,dockerfilePath){
     }
     return true;
 }
-function compileSourceCodeDirectly(name,label,lang,type,dockerfilePath){
+function compileSourceCodeJava(name,label,lang,type,dockerfilePath){
     
     //let compileDockerFileName = "Dockerfile-" + lang + "-compile"; 
     //let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + compileDockerFileName;
@@ -91,7 +91,7 @@ function buildDockerImageByParams(name, label, lang, type, dockerfilePath) {
 function buildServiceDockerImage(name, label, lang, type, dockerfilePath) {
 
     //let res = compileSourceCode(name, label, lang, type, dockerfilePath);
-    let res = compileSourceCodeDirectly(name, label, lang, type, dockerfilePath);
+    let res = compileSourceCodeJava(name, label, lang, type, dockerfilePath);
     
     if (!res) {
         console.log('failed to build deployment!');
@@ -182,9 +182,10 @@ function releaseService2Cloud(serviceName,imageName){
     if(result.code !== 0){
         
         console.log('failed to release service to k8s based imageName:' + imageName);
+        console.log('root cause:' + result.stderr);
     }else{
         console.log('sucessfule to release service to k8s cloud platform!')
-        console.log('root cause:' + result.stderr);
+        
     }
 
 }

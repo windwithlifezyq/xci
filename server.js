@@ -46,9 +46,12 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
 
     let originDirectory = process.cwd();
     
-    var params = {targetPath:'./',name:"coder",lang:'java',type:'server',label:'v1.1.3',cloneUrl:'https://github.com/windwithlife/coder.git'};
+    var params = {targetPath:'./',name:"coder",lang:'java',type:'server',label:'1.0',cloneUrl:'https://github.com/windwithlife/coder.git'};
     if(req.query.targetPath) {
         params.targetPath = req.query.targetPath;
+    }
+    if(req.query.label) {
+        params.label = req.query.label;
     }
     if(req.query.lang) {
         params.lang = req.query.lang;
@@ -86,7 +89,6 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
     }else{
         console.log('failed to process release,root case: git fetch a failure!')
     }
-    //shellTools.cd(envConfig.getServerRootPath());
     res.status(200);
     res.end();
 

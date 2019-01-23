@@ -1,0 +1,14 @@
+
+FROM node:8.0.0
+MAINTAINER Joe
+
+RUN mkdir -p /runDIR
+RUN mkdir -p /release
+
+ADD ./* /runDIR/web/
+
+RUN cd /runDIR/web && pwd && npm install 
+RUN cd /runDIR/web && npm run build
+RUN cp -r /runDIR/web/*  /release/
+WORKDIR /runDIR/web
+
