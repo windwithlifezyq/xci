@@ -9,6 +9,9 @@ module.exports ={
     getAutoReleaseResBasePath:function(){return path.join(this.SERVER_ROOT_PATH,"../autoRelease/")},
     getReleaseDockerFilePath:function(){ return path.join(this.SERVER_ROOT_PATH, './cloud-resources/dockerfiles/')},
     getDeploymentTemplatePath:function(){return path.join(this.SERVER_ROOT_PATH,'./cloud-resources/k8s/templates/')},
-    getDeploymentResourcesPath:function(){return path.join(this.SERVER_ROOT_PATH,'./cloud-resources/k8s/resources/deployments/')}
+    getDeploymentResourcesPath:function(){return path.join(this.SERVER_ROOT_PATH,'./cloud-resources/k8s/resources/deployments/')},
+    releaseSourceCodePath:function(projectName){return path.join(this.getAutoReleaseResBasePath(),projectName,"src",projectName)},
+    releaseSourceCodeRootPath:function(projectName){return path.join(this.getAutoReleaseResBasePath(),projectName,"src")},
+    releaseProductPath:function(projectName){return path.join(this.getAutoReleaseResBasePath(),projectName,"product")}
 
 }

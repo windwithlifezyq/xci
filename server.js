@@ -40,7 +40,7 @@ app.post('/gitPushEventXCI',function(req, res){
 })
 app.post('/gitPushEventProject/:serverPort',function(req, res){
 
-    shellTools.cd(envConfig.getServerRootPath());
+    //shellTools.cd(envConfig.getServerRootPath());
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
 
@@ -68,7 +68,7 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
     var result = gitTools.fetchSourceFromGit(params.name,params.cloneUrl,'master');
     if (result){
         if(params.name =='coder'){
-            let result = dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/");
+            let result = dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/simpleserver");
             if (result){
                 dockerTools.release2K8sCloud(params.name,params.label,params.type);
             }else{
@@ -86,7 +86,7 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
     }else{
         console.log('failed to process release,root case: git fetch a failure!')
     }
-    shellTools.cd(envConfig.getServerRootPath());
+    //shellTools.cd(envConfig.getServerRootPath());
     res.status(200);
     res.end();
 

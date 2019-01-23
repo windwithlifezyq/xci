@@ -6,11 +6,11 @@ require('shelljs/global');
 var fs = require('fs')
 var path= require('path')
 var envConfig = require('./env-config');
-var RELEASE_BASE_PATH = envConfig.getAutoReleaseResBasePath();
+//var RELEASE_BASE_PATH = envConfig.getAutoReleaseResBasePath();
 
 
-function init_release_directory() {
-    mkdir('-p', RELEASE_BASE_PATH);
+function init_release_directory(projectName) {
+    mkdir('-p', envConfig.releaseSourceCodePath(projectName));
 }
 
 
@@ -47,19 +47,22 @@ function fetch_project_src(project_name, url, branch) {
         return;
     }
 
-    var release_directory = path.join(RELEASE_BASE_PATH,project_name);
+    var release_directory = envConfig.releaseSourceCodePath(project_name);
     var isExist = fs.existsSync(release_directory);
 
     if (isExist) {
         cd(release_directory);
         pullSource();
+        cd(envConfig.getServerRootPath());
 
     } else {
-        init_release_directory();
-        cd(RELEASE_BASE_PATH);
+        init_release_directory(project_name);
+        cd(envConfig.releaseSourceCodeRootPath(project_name));
         if (cloneSource(url)){
-            cd(release_directory);
+            cd(envConfig.getServerRootPath());
+            //cd(release_directory);
         }else{
+            cd(envConfig.getServerRootPath());
             console.log('failed to clone project:' + project_name);
             return false;
         }

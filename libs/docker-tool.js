@@ -28,14 +28,14 @@ function getDockerFileByParams(lang,type) {
     return dockerFile;
 }
 function compileSourceCode(name,label,lang,type,dockerfilePath){
-    if (dockerfilePath){
-        cd(dockerfilePath)
-    }
+    //if (dockerfilePath){
+    //    cd(dockerfilePath)
+    //}
     let compileDockerFileName = "Dockerfile-" + lang + "-compile"; 
-   
-    let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + compileDockerFileName
+    let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + compileDockerFileName;
+    let workPath = path.join(evnConfig.releaseSourceCodePath(name),dockerfilePath);
     console.log('Docker image build before env:' + process.cwd());
-    let compileCommand = "docker build ./simpleserver -t builder-img -f " + compileDockerFileSourceURL  + " && docker create --name builder builder-img && docker cp builder:/release/ ./release/ && docker rm builder "
+    let compileCommand = "docker build " + workPath + " -t builder-img -f " + compileDockerFileSourceURL  + " && docker create --name builder builder-img && docker cp builder:/release/ " +evnConfig.releaseProductPath(name) +" && docker rm builder "
    
     console.log('compile command:' + compileCommand)
     let result = exec(compileCommand);
@@ -54,7 +54,8 @@ function buildDockerImageByParams(name, label, lang, type, dockerfilePath) {
     let DeployDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + dockerFileName;
     console.log('Docker image build before env:' + process.cwd());
 
-    let buildDeployCommand = 'docker build ./simpleserver -f ' + DeployDockerFileSourceURL + ' -t ' + imageName;
+    let workPath = evnConfig.releaseProductPath(name);
+    let buildDeployCommand = 'docker build ' + workPath + ' -f ' + DeployDockerFileSourceURL + ' -t ' + imageName;
 
     console.log('Docker image build command:' + buildDeployCommand)
     console.log('Docker image build env:' + process.cwd());
