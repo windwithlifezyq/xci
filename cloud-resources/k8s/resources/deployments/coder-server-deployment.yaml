@@ -2,14 +2,14 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    k8sApp: coder-soa
-  name: coder-soa
+    k8sApp: coder-server
+  name: coder-server
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      k8sApp: coder-soa
+      k8sApp: coder-server
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -18,13 +18,13 @@ spec:
   template:
     metadata:
       labels:
-        k8sApp: coder-soa
-      name: coder-soa
+        k8sApp: coder-server
+      name: coder-server
     spec:
       containers:
         - args:
             - '--apiserver-host=http://172.27.0.12:8080'
-          image: 'coder-soa:v1'
+          image: 'coder-server:v1.1.3'
           imagePullPolicy: IfNotPresent
           name: default-app
           ports:
@@ -38,13 +38,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: coder-soa
+  name: coder-server
   namespace: default
   labels:
-    k8sApp: coder-soa
+    k8sApp: coder-server
 spec:
   selector:
-    k8sApp: coder-soa
+    k8sApp: coder-server
   ports:
     - port: 8080
       targetPort: 8080

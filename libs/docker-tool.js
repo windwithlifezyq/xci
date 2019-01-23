@@ -1,5 +1,5 @@
 /**
- * Created by Joe on 2018/11/21.
+ * Created by Joezhang on 2018/11/21.
  */
 
 require('shelljs/global');
@@ -8,74 +8,6 @@ var fs = require('fs');
 var path = require('path');
 var evnConfig = require('./env-config');
 
-function test() {
-    var checkDir = fs.existsSync('../autoRele/');
-    console.log(checkDir);
-}
-
-function buildDockerImage(dockerName,envName,dockerfilePath) {
-    if (dockerfilePath){
-        cd(dockerfilePath)
-    }
-
-
-        let imageName = dockerName + ":" + envName
-        let buldCommand = 'docker build . -f ./Dockerfile -t ' + imageName ;
-        if (exec(buldCommand).code !== 0) {
-            console.log('failed to build docker image:' + imageName)
-        }else{
-            console.log('sucessful to build image');
-        }
-
-}
-function getDockerFileByParams(lang,type) {
-    let dockerFile = 'Dockerfile' + '-' + lang + '-' + type;
-    return dockerFile;
-}
-function buildServiceDockerImage(name,label,lang,type,dockerfilePath) {
-    if (dockerfilePath){
-        cd(dockerfilePath)
-    }
-    let dockerFileName = getDockerFileByParams(lang,type);
-    let imageName  = getDockerImageName(name,label,type);
-
-    let dockerFileSource = evnConfig.getReleaseDockerFilePath() + dockerFileName;
-    let dockerFileDestPath = './' ;
-    cp(dockerFileSource,dockerFileDestPath);
-
-    let buldCommand = 'docker build . -f ./'+ dockerFileName +  ' -t ' + imageName ;
-    console.log('Docker image build command:' + buldCommand)
-    console.log('Docker image build env:' + process.cwd());
-    if (exec(buldCommand).code !== 0) {
-        console.log('failed to build docker image! IMAGE NAME:[' + imageName +']');    }else{
-        console.log('sucessful to build image! IMAGE NAME:[' + imageName +']');
-    }
-}
-function runDockerImage(dockerName,envName,mapPort){
-    let imageName = dockerName + ":" + envName;
-    let containerName = dockerName +"_" +  envName;
-    let stopContainerCommand = 'docker stop ' + containerName;
-    let removeContainerCommand = 'docker rm ' + containerName;
-    let runCommand = 'docker run -d  --name=' +  containerName + ' -p ' + mapPort + ":" + mapPort + "  " + imageName;
-
-    console.log(stopContainerCommand);
-    console.log(removeContainerCommand);
-    console.log(runCommand);
-    exec(stopContainerCommand);
-    exec(removeContainerCommand);
-    if (exec(runCommand).code !== 0){
-        console.log('failed to run container based imageName:' + imageName);
-    }
-
-}
-
-
-function buildAndRun(dockerName,envName,path,port){
-
-    buildDockerImage(dockerName,envName,path);
-    runDockerImage(dockerName,envName,port);
-
-}
 function getServiceName(serviceName, type){
     let imageName = "a/b:1.0.1";
     if (type){
@@ -90,6 +22,76 @@ function getDockerImageName(serviceName,labelName, type){
     imageName = getServiceName(serviceName,type) + ":" + labelName;
     return imageName;
 }
+
+function getDockerFileByParams(lang,type) {
+    let dockerFile = 'Dockerfile' + '-' + lang + '-' + type;
+    return dockerFile;
+}
+function compileSourceCode(name,label,lang,type,dockerfilePath){
+    if (dockerfilePath){
+        cd(dockerfilePath)
+    }
+    let compileDockerFileName = "Dockerfile-" + lang + "-compile"; 
+   
+    let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + compileDockerFileName
+    console.log('Docker image build before env:' + process.cwd());
+    let compileCommand = "docker build ./simpleserver -t builder-img -f " + compileDockerFileSourceURL  + " && docker create --name builder builder-img && docker cp builder:/release/ ./release/ && docker rm builder "
+   
+    console.log('compile command:' + compileCommand)
+    let result = exec(compileCommand);
+    if (result.code !== 0) {
+        console.log('failed to compile  compile command:[' + compileCommand +']');   
+        console.log(result.stdout); 
+        return false;
+    }
+    return true;
+}
+function buildDockerImageByParams(name, label, lang, type, dockerfilePath) {
+
+    let dockerFileName = getDockerFileByParams(lang, type);
+    let imageName = getDockerImageName(name, label, type);
+
+    let DeployDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + dockerFileName;
+    console.log('Docker image build before env:' + process.cwd());
+
+    let buildDeployCommand = 'docker build ./simpleserver -f ' + DeployDockerFileSourceURL + ' -t ' + imageName;
+
+    console.log('Docker image build command:' + buildDeployCommand)
+    console.log('Docker image build env:' + process.cwd());
+    let res = exec(buildDeployCommand);
+    if (res.code !== 0) {
+        console.log('failed to build deployment! commandline:[' + buildDeployCommand + ']');
+        console.log(res.stdout);
+        return false;
+    } else {
+        console.log('sucessful to build deployment! commandline:[' + buildDeployCommand + ']');
+        return true;
+    }
+
+
+}
+function buildServiceDockerImage(name, label, lang, type, dockerfilePath) {
+
+    let res = compileSourceCode(name, label, lang, type, dockerfilePath);
+    if (!res) {
+        console.log('failed to build deployment!');
+        //console.log(res.stdout); 
+        return false;
+    } else {
+        let result = buildDockerImageByParams(name, label, lang, type, dockerfilePath);
+        if (result) {
+            console.log('sucessful to build deployment! ');
+            return true;
+        } else {
+            console.log('failed to build deployment!');
+            return false;
+        }
+
+    }
+
+}
+
+
 function createK8sOperationFiles(serviceName,imageName){
 
     let currentPath = process.cwd();
@@ -173,7 +175,6 @@ function release2K8sCloud(name,labelName,type) {
 }
 
 module.exports = {
-    buildImage: buildDockerImage,
     buildServiceDockerImage:buildServiceDockerImage,
     release2K8sCloud:release2K8sCloud
 }

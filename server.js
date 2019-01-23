@@ -45,8 +45,8 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
     console.log('current directory is:' + process.cwd());
 
     let originDirectory = process.cwd();
-    //let targetPath = './';
-    var params = {targetPath:'./',name:"coder",lang:'java',type:'soa',label:'v1',cloneUrl:'https://github.com/windwithlife/coder.git'};
+    
+    var params = {targetPath:'./',name:"coder",lang:'java',type:'server',label:'v1.1.3',cloneUrl:'https://github.com/windwithlife/coder.git'};
     if(req.query.targetPath) {
         params.targetPath = req.query.targetPath;
     }
@@ -67,15 +67,21 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
 
     var result = gitTools.fetchSourceFromGit(params.name,params.cloneUrl,'master');
     if (result){
-        let envName = "dev";
         if(params.name =='coder'){
-            //dockerTools.makeImageAndRun(params.name + "_web",envName,"",3000);
-            //dockerTools.makeImageAndRun(params.name + "_server",envName,"./files/server/simpleserver/",8080);
-            dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/simpleserver/");
-            dockerTools.release2K8sCloud(params.name,params.label,params.type);
+            let result = dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/");
+            if (result){
+                dockerTools.release2K8sCloud(params.name,params.label,params.type);
+            }else{
+                console.log("failed to create service image! can't continue to deploy to k8s");
+            }  
         }else{
-            dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/simpleserver/");
-            dockerTools.release2K8sCloud(params.name,params.label,params.type);
+            let result =dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,params.targetPath);
+            if (result){
+                dockerTools.release2K8sCloud(params.name,params.label,params.type);
+            }else{
+                console.log("failed to create service image! can't continue to deploy to k8s");
+            }  
+            
         }
     }else{
         console.log('failed to process release,root case: git fetch a failure!')
