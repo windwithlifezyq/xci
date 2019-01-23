@@ -28,9 +28,7 @@ function getDockerFileByParams(lang,type) {
     return dockerFile;
 }
 function compileSourceCode(name,label,lang,type,dockerfilePath){
-    //if (dockerfilePath){
-    //    cd(dockerfilePath)
-    //}
+    
     let compileDockerFileName = "Dockerfile-" + lang + "-compile"; 
     let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + compileDockerFileName;
     let workPath = path.join(evnConfig.releaseSourceCodePath(name),dockerfilePath);
@@ -42,6 +40,25 @@ function compileSourceCode(name,label,lang,type,dockerfilePath){
     if (result.code !== 0) {
         console.log('failed to compile  compile command:[' + compileCommand +']');   
         console.log(result.stdout); 
+        return false;
+    }
+    return true;
+}
+function compileSourceCodeDirectly(name,label,lang,type,dockerfilePath){
+    
+    //let compileDockerFileName = "Dockerfile-" + lang + "-compile"; 
+    //let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + compileDockerFileName;
+    let workPath = path.join(evnConfig.releaseSourceCodePath(name),dockerfilePath);
+    let workTargetPath = path.join(workPath,"./target");
+    console.log('Docker image build before env:' + process.cwd());
+    let compileCommand = "docker volume create --name maven-repo && docker run -i --name maven -v "+workPath+":/usr/src/app -v maven-repo:/usr/share/maven/ref -w /usr/src/app registry.cn-hangzhou.aliyuncs.com/acs/maven mvn -DskipTests=true clean package &&  cp " + workTargetPath +"/*.jar " + evnConfig.releaseProductPath(name) + "/app.jar && docker rm maven";
+    let resetEnvCommand = "docker rm maven";
+    console.log('compile command:' + compileCommand)
+    exec(resetEnvCommand);
+    let result = exec(compileCommand);
+    if (result.code !== 0) {
+        console.log('failed to compile  compile command:[' + compileCommand +']');   
+        console.log(result.stderr); 
         return false;
     }
     return true;
@@ -62,7 +79,7 @@ function buildDockerImageByParams(name, label, lang, type, dockerfilePath) {
     let res = exec(buildDeployCommand);
     if (res.code !== 0) {
         console.log('failed to build deployment! commandline:[' + buildDeployCommand + ']');
-        console.log(res.stdout);
+        console.log(res.stderr);
         return false;
     } else {
         console.log('sucessful to build deployment! commandline:[' + buildDeployCommand + ']');
@@ -73,10 +90,11 @@ function buildDockerImageByParams(name, label, lang, type, dockerfilePath) {
 }
 function buildServiceDockerImage(name, label, lang, type, dockerfilePath) {
 
-    let res = compileSourceCode(name, label, lang, type, dockerfilePath);
+    //let res = compileSourceCode(name, label, lang, type, dockerfilePath);
+    let res = compileSourceCodeDirectly(name, label, lang, type, dockerfilePath);
+    
     if (!res) {
         console.log('failed to build deployment!');
-        //console.log(res.stdout); 
         return false;
     } else {
         let result = buildDockerImageByParams(name, label, lang, type, dockerfilePath);
@@ -160,10 +178,13 @@ function releaseService2Cloud(serviceName,imageName){
 
     console.log("Exec Command String:" + runDeployCommand);
     exec(runUnDeployCommand);
-    if(exec(runDeployCommand).code !== 0){
+    let result = exec(runDeployCommand);
+    if(result.code !== 0){
+        
         console.log('failed to release service to k8s based imageName:' + imageName);
     }else{
         console.log('sucessfule to release service to k8s cloud platform!')
+        console.log('root cause:' + result.stderr);
     }
 
 }
