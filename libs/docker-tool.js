@@ -30,24 +30,23 @@ function getDockerFileByParams(lang,type) {
 function compileSourceCode(name,label,lang,type,dockerfilePath){
     
     let compileDockerFileName = "Dockerfile-" + lang + "-compile"; 
+    let compileTempDockerImage = lang + "-builder-img";
     let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + compileDockerFileName;
     let workPath = path.join(evnConfig.releaseSourceCodePath(name),dockerfilePath);
     console.log('Docker image build before env:' + process.cwd());
-    let compileCommand = "docker build " + workPath + " -t builder-img -f " + compileDockerFileSourceURL  + " && docker create --name builder builder-img && docker cp builder:/release/ " +evnConfig.releaseProductPath(name) +" && docker rm builder "
+    //let compileCommand = "docker build " + workPath + " -t " + compileTempDockerImage + " -f " + compileDockerFileSourceURL  + " && docker create --name builder " + compileTempDockerImage +" && docker cp builder:/release/ " +evnConfig.releaseProductPath(name) +" && docker rm builder "
+    let compileCommand = "docker build " + workPath + " -t " + compileTempDockerImage + " -f " + compileDockerFileSourceURL;
    
     console.log('compile command:' + compileCommand)
     let result = exec(compileCommand);
     if (result.code !== 0) {
         console.log('failed to compile  compile command:[' + compileCommand +']');   
-        console.log(result.stdout); 
+        console.log(result.stderr); 
         return false;
     }
     return true;
 }
 function compileSourceCodeJava(name,label,lang,type,dockerfilePath){
-    
-    //let compileDockerFileName = "Dockerfile-" + lang + "-compile"; 
-    //let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + compileDockerFileName;
     let workPath = path.join(evnConfig.releaseSourceCodePath(name),dockerfilePath);
     let workTargetPath = path.join(workPath,"./target");
     console.log('Docker image build before env:' + process.cwd());
@@ -88,10 +87,28 @@ function buildDockerImageByParams(name, label, lang, type, dockerfilePath) {
 
 
 }
+function buildServiceImageByDockerFileMulti(name, label, lang, type, dockerfilePath){
+    let dockerFileName = getDockerFileByParams(lang, type) + ".multi";
+    let imageName = getDockerImageName(name, label, type);
+    let compileDockerFileSourceURL = evnConfig.getReleaseDockerFilePath() + dockerFileName;
+    let workPath = path.join(evnConfig.releaseSourceCodePath(name),dockerfilePath);
+    let compileCommand = "docker build " + workPath + " -t " + imageName + " -f " + compileDockerFileSourceURL;
+    console.log('compile command:' + compileCommand);
+    let result = exec(compileCommand);
+    if (result.code !== 0) {
+        console.log('failed to compile  compile command:[' + compileCommand +']');
+          
+        console.log('Docker image build before env:' + process.cwd());
+        console.log(result.stderr); 
+        return false;
+    }
+    return true;
+}
 function buildServiceDockerImage(name, label, lang, type, dockerfilePath) {
-
-    //let res = compileSourceCode(name, label, lang, type, dockerfilePath);
-    let res = compileSourceCodeJava(name, label, lang, type, dockerfilePath);
+    
+    let buildResult = buildServiceImageByDockerFileMulti(name, label, lang, type, dockerfilePath);
+    return buildResult;
+    let res = compileSourceCode(name, label, lang, type, dockerfilePath);
     
     if (!res) {
         console.log('failed to build deployment!');

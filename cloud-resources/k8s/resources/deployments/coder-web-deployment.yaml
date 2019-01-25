@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8sApp: coder-web
+  name: coder-web
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8sApp: coder-web
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8sApp: coder-web
+      name: coder-web
+    spec:
+      containers:
+        - args:
+            - '--apiserver-host=http://172.27.0.12:8080'
+          image: 'coder-web:1.6.0'
+          imagePullPolicy: IfNotPresent
+          name: default-app
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: coder-web
+  namespace: default
+  labels:
+    k8sApp: coder-web
+spec:
+  selector:
+    k8sApp: coder-web
+  ports:
+    - port: 8080
+      targetPort: 8080

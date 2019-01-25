@@ -1,10 +1,10 @@
 var bodyParser = require('body-parser');
 var express = require('express')
-var fs= require('fs')
+var fs = require('fs')
 var gitTools = require('./libs/git-tool');
 var dockerTools = require('./libs/docker-tool');
-var shellTools  = require('./libs/shell-tool');
-var envConfig   = require('./libs/env-config');
+var shellTools = require('./libs/shell-tool');
+var envConfig = require('./libs/env-config');
 
 var app = express();
 console.log(new Date().toLocaleString());
@@ -13,24 +13,24 @@ function run_cmd(cmd, args, callback) {
     var child = spawn(cmd, args);
     var resp = "";
 
-    child.stdout.on('data', function(buffer) { resp += buffer.toString(); });
-    child.stdout.on('end', function() { callback (resp) });
+    child.stdout.on('data', function (buffer) { resp += buffer.toString(); });
+    child.stdout.on('end', function () { callback(resp) });
 }
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-app.post('/gitPushEventXCI',function(req, res){
+app.post('/gitPushEventXCI', function (req, res) {
     shellTools.cd(envConfig.getServerRootPath());
     console.log("begin re-deploy myself-------------")
     let originDirectory = process.cwd();
     var result = gitTools.gitPull();
-    if (shellTools.installPackages()){
+    if (shellTools.installPackages()) {
 
         shellTools.restartServer()
 
-    }else{
+    } else {
         console.log('failed install xci project npm dependences!');
     }
     shellTools.cd(envConfig.getServerRootPath());
@@ -38,29 +38,29 @@ app.post('/gitPushEventXCI',function(req, res){
     res.end();
 
 })
-app.post('/gitPushEventProject/:serverPort',function(req, res){
+app.post('/gitPushEventProject/:serverPort', function (req, res) {
 
     //shellTools.cd(envConfig.getServerRootPath());
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
 
     let originDirectory = process.cwd();
-    
-    var params = {targetPath:'./',name:"coder",lang:'java',type:'server',label:'1.0',cloneUrl:'https://github.com/windwithlife/coder.git'};
-    if(req.query.targetPath) {
+
+    var params = { targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
+    if (req.query.targetPath) {
         params.targetPath = req.query.targetPath;
     }
-    if(req.query.label) {
+    if (req.query.label) {
         params.label = req.query.label;
     }
-    if(req.query.lang) {
+    if (req.query.lang) {
         params.lang = req.query.lang;
     }
-    if(req.query.type) {
+    if (req.query.type) {
         params.type = req.query.type;
     }
 
-    if (req.body.repository){
+    if (req.body.repository) {
         params.name = req.body.repository.name;
         params.gitUrl = req.body.repository.git_url;
         params.cloneUrl = req.body.repository.clone_url;
@@ -68,40 +68,33 @@ app.post('/gitPushEventProject/:serverPort',function(req, res){
         console.log(params)
     }
 
-    var result = gitTools.fetchSourceFromGit(params.name,params.cloneUrl,'master');
-    if (result){
-        if(params.name =='coder'){
-            let result = dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,"./files/server/simpleserver");
-            if (result){
-                dockerTools.release2K8sCloud(params.name,params.label,params.type);
-            }else{
-                console.log("failed to create service image! can't continue to deploy to k8s");
-            }  
-        }else{
-            let result =dockerTools.buildServiceDockerImage(params.name,params.label,params.lang,params.type,params.targetPath);
-            if (result){
-                dockerTools.release2K8sCloud(params.name,params.label,params.type);
-            }else{
-                console.log("failed to create service image! can't continue to deploy to k8s");
-            }  
-            
-        }
-    }else{
-        console.log('failed to process release,root case: git fetch a failure!')
+    var resultgit = gitTools.fetchSourceFromGit(params.name, params.cloneUrl, 'master');
+    if (!resultgit) {
+        console.log('failed to get source from git,root case: git fetch a failure!')
     }
+    if ((params.name == 'coder') && (params.type == 'server')) {
+        params.targetPath = 'files/server/simpleserver/';
+    }
+    let result = dockerTools.buildServiceDockerImage(params.name, params.label, params.lang, params.type, params.targetPath);
+    if (result) {
+        dockerTools.release2K8sCloud(params.name, params.label, params.type);
+    } else {
+        console.log("failed to create service image! can't continue to deploy to k8s");
+    }
+
     res.status(200);
     res.end();
 
 })
 app.get('/', function (req, res) {
-  res.send('Hello,world!')
+    res.send('Hello,world!')
 })
 
 
 app.get('/test', function (req, res) {
     //dockerTools.releasdockerTools.release2K8sCloud(params.name,params.label,params.type);
-    dockerTools.release2K8sCloud("coder","latest","soa");
-    
+    dockerTools.release2K8sCloud("coder", "latest", "soa");
+
     res.send('Hello,world! test!');
 })
 process.on('uncaughtException', function (err) {

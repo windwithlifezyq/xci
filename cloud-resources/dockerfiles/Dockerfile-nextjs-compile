@@ -1,14 +1,11 @@
 
-FROM node:8.0.0
+FROM node:8.0.0 as nextjscompile
 MAINTAINER Joe
 
 RUN mkdir -p /runDIR
-RUN mkdir -p /release
+RUN mkdir -p /release/web
+WORKDIR /release/web
 
-ADD ./* /runDIR/web/
+COPY ./  /release/web/
 
-RUN cd /runDIR/web && pwd && npm install 
-RUN cd /runDIR/web && npm run build
-RUN cp -r /runDIR/web/*  /release/
-WORKDIR /runDIR/web
 

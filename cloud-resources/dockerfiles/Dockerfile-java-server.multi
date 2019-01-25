@@ -1,0 +1,20 @@
+
+FROM windwithlife/maven-fast:1.0
+
+ADD pom.xml /tmp/build/
+RUN cd /tmp/build && mvn -q dependency:resolve
+
+ADD src /tmp/build/src
+RUN mkdir -p /release/ 
+WORKDIR /release/   
+RUN cd /tmp/build && mvn -q -DskipTests=true  package && mv target/*.jar /release/app.jar
+
+
+FROM windwithlife/java-server-min:latest
+
+RUN mkdir -p /deployment/
+#ADD ./release/app.jar /deployment/
+COPY --from=0 /release /deployment
+EXPOSE 8080
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/deployment/app.jar","--spring.profiles.active=docker"]
+

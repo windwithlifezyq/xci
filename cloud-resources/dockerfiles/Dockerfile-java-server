@@ -2,7 +2,7 @@
 FROM windwithlife/java-server-min:latest
 
 RUN mkdir -p /deployment/
-ADD ./app.jar /deployment/
+ADD ./release/app.jar /deployment/
 EXPOSE 8080
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/deployment/app.jar","--spring.profiles.active=docker"]
 
