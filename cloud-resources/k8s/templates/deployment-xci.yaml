@@ -1,0 +1,31 @@
+piVersion: v1 
+kind: Pod 
+metadata: 
+    name: dood 
+spec: 
+    containers: 
+      - name: docker-cmds 
+        image: xci:latest
+        # command: ['kubectl', 'get', 'pods'] 
+        volumeMounts: 
+          - mountPath: /var/run 
+            name: docker-sock 
+          - mountPath: /usr/bin/docker 
+            name: docker-bin 
+          - mountPath: /usr/bin/kubectl 
+            name: kubectl-bin 
+          - mountPath: /root/.kube/config 
+            name: kubectl-conf 
+    volumes: 
+      - name: docker-sock 
+        hostPath: 
+            path: /var/run 
+      - name: docker-bin 
+        hostPath: 
+            path: /usr/bin/docker 
+      - name: kubectl-bin 
+        hostPath: 
+            path: /usr/bin/kubectl 
+      - name: kubectl-conf 
+        hostPath: 
+            path: /etc/kubernetes/admin.conf

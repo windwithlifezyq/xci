@@ -1,9 +1,10 @@
 
-FROM java-server:v1.0
+FROM node:8.10.0-slim
 
-RUN mkdir -p /runDIR/
-ADD app.jar /runDIR/
+MAINTAINER Joe <379163259@qq.com>
+RUN apt-get update && apt-get install -y libltdl7
 
-EXPOSE 8080
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/runDIR/app.jar","--spring.profiles.active=docker"]
+ENTRYPOINT ["kubectl","get","pods"]
+
+
 
