@@ -16,7 +16,7 @@ RUN mkdir -p /runDIR/web
 WORKDIR /runDIR/web
 
 COPY --from=nextjscompile /release/web /runDIR/web 
-RUN cd /runDIR/web && npm install && npm run build
+RUN cd /runDIR/web && npm install
 
 ENV HOST 0.0.0.0
 ENV PORT 3000
