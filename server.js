@@ -71,6 +71,9 @@ app.post('/gitPushEventProject/:serverPort', function (req, res) {
     var resultgit = gitTools.fetchSourceFromGit(params.name, params.cloneUrl, 'master');
     if (!resultgit) {
         console.log('failed to get source from git,root case: git fetch a failure!')
+        res.send('failed to get source from git,root case: git fetch a failure!')
+        res.end();
+        return;
     }
     if ((params.name == 'coder') && (params.type == 'server')) {
         params.targetPath = 'files/server/simpleserver/';
