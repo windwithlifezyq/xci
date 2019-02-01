@@ -10,7 +10,7 @@ spec:
       labels:
         k8sApp: xci-web 
     spec: 
-      hostNetwork: true
+      #hostNetwork: true
       containers: 
       - name: xci-website-container 
         image: xci-web
