@@ -23,7 +23,6 @@ spec:
     spec:
       containers:
       - args:
-        - --apiserver-host=http://172.27.0.12:8080
         image: docker.io/test-default:v1.1.1
         imagePullPolicy: IfNotPresent
         name: default-app

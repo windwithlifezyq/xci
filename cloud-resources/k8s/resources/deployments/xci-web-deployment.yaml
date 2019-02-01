@@ -13,10 +13,9 @@ spec:
       hostNetwork: true
       containers: 
       - name: xci-website-container 
-        image: xci:base
+        image: xci-web
         ports:
         - containerPort: 3333
-        #  hostPort: 3000
         volumeMounts: 
           - mountPath: /var/run 
             name: docker-sock 

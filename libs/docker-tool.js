@@ -136,6 +136,7 @@ function createK8sOperationFiles(serviceName,imageName){
 
     let deploymentTemplate = templateFilePath + 'deployment.yaml';
     let serviceTemplate = templateFilePath + 'service.yaml';
+    let ingressTemplate = templateFilePath + 'ingress.yaml';
 
     let deployServiceFile = evnConfig.getDeploymentResourcesPath() +  serviceName;
      if(exec('mkdir -p ' + evnConfig.getDeploymentResourcesPath()).code !==0){
@@ -144,6 +145,7 @@ function createK8sOperationFiles(serviceName,imageName){
      //if (exec(gitCloneCommand).code !== 0) 
     let tempDeployFile = deployServiceFile + "-deploy.yaml"
     let tempServiceFile = deployServiceFile + "-service.yaml"
+    let tempIngressFile = deployServiceFile + "-ingress.yaml"
     let finalDeploymentFileName = deployServiceFile +'-deployment.yaml';
     console.log("Deploy template:\r\n" + deploymentTemplate);
 
@@ -165,20 +167,32 @@ function createK8sOperationFiles(serviceName,imageName){
     service.metadata.name = serviceName;
     service.metadata.labels.k8sApp = serviceName;
     service.spec.selector.k8sApp = serviceName;
-    console.log(deploy);
+    console.log(service);
     yaml.writeSync(tempServiceFile,service,"utf8");
+
+    console.log("ingress template" + ingressTemplate);
+    let ingress = yaml.readSync(ingressTemplate, {encoding: "utf8",schema: yaml.schema.defaultSafe})
+    ingress.metadata.name = serviceName + '-ingress';
+    //ingress.metadata.labels.k8sApp = serviceName;
+    ingress.spec.rules[0].http.paths[0].backend.serviceName = serviceName;
+    console.log(ingress);
+    yaml.writeSync(tempIngressFile,ingress,"utf8");
 
     var contentTextDeployment = fs.readFileSync(tempDeployFile,'utf-8');
     var contentTextService = fs.readFileSync(tempServiceFile,'utf-8');
+    var contentTextIngress = fs.readFileSync(tempIngressFile,'utf-8');
     var contentSplitLine = "\n---\n\n"
 
     rm(finalDeploymentFileName);
     rm(tempDeployFile);
     rm(tempServiceFile);
+    rm(tempIngressFile);
 
     var result = fs.appendFileSync(finalDeploymentFileName,contentTextDeployment);
     result = fs.appendFileSync(finalDeploymentFileName,contentSplitLine);
     result = fs.appendFileSync(finalDeploymentFileName,contentTextService);
+    result = fs.appendFileSync(finalDeploymentFileName,contentSplitLine);
+    result = fs.appendFileSync(finalDeploymentFileName,contentTextIngress);
 
     console.log("DockerImageName:" + imageName);
     return imageName;
@@ -210,7 +224,12 @@ function releaseService2Cloud(serviceName,imageName){
 function release2K8sCloud(name,labelName,type) {
     let imageName = getDockerImageName(name,labelName,type);
     let serviceName  = getServiceName(name, type);
-    createK8sOperationFiles(serviceName,imageName);
+    if (name == 'xci'){
+
+    }else{
+        createK8sOperationFiles(serviceName,imageName);
+    }
+    
     releaseService2Cloud(serviceName,imageName);
 }
 
