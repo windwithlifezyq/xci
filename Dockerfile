@@ -19,7 +19,7 @@ COPY --from=nextjscompile /release/web /runDIR/web
 RUN cd /runDIR/web && npm install
 
 ENV HOST 0.0.0.0
-ENV PORT 3000
+ENV PORT 3333
 
-EXPOSE 3000
+EXPOSE 3333
 ENTRYPOINT ["npm","start"]
