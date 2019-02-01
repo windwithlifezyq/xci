@@ -53,3 +53,24 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: xci-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+  - hosts:
+    - release.zhangyongqiao.com
+    secretName: ingress-nginx/default-certs
+  rules:
+  - host: release.zhangyongqiao.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: xci-web-svc
+          servicePort: 3000
+
