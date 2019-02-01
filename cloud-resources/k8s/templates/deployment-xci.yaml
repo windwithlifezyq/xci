@@ -1,12 +1,15 @@
-piVersion: v1 
+apiVersion: v1 
 kind: Pod 
 metadata: 
-    name: dood 
+    name: xci-dind 
 spec: 
+    hostNetwork: true
     containers: 
       - name: docker-cmds 
-        image: xci:latest
-        # command: ['kubectl', 'get', 'pods'] 
+        image: xci:base
+        ports:
+        - containerPort: 3000
+          hostPort: 3000
         volumeMounts: 
           - mountPath: /var/run 
             name: docker-sock 
