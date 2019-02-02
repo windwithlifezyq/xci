@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: name-ingress
   annotations:
+    nginx.ingress.kubernetes.io/app-root: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
