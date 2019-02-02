@@ -14,8 +14,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
-app.post('/gitPushEventXCI', function (req, res) {
-    var params = { targetPath: './', name: "xci", lang: 'xcijs', type: 'web', label: 'latest', cloneUrl: 'https://github.com/windwithlifezyq/xci.git' };
+app.post('/gitPushEventXCI/', function (req, res) {
+    var params = { isUseOwnDockerFile: true, targetPath: './', name: "xci", lang: 'xcijs', type: 'web', label: 'latest', cloneUrl: 'https://github.com/windwithlifezyq/xci.git' };
     if (req.body.repository) {
         params.name = req.body.repository.name;
         params.gitUrl = req.body.repository.git_url;
@@ -23,9 +23,7 @@ app.post('/gitPushEventXCI', function (req, res) {
         params.sshUrl = req.body.repository.ssh_url;
         
     }
-
     console.log("release params is :",params);
-    //res.send('begin to fetch source code.....')
     if(releaseServer.autoRelease(params)){
         res.send('successful to auto release!')  
     }else{
@@ -37,9 +35,12 @@ app.post('/gitPushEventProject/', function (req, res) {
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
 
-    var params = { targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
+    var params = { isUseOwnDockerFile: false,targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
     if (req.query.name) {
         params.name = req.query.name;
+    }
+    if (req.query.ownDockerfile) {
+        params.isUseOwnDockerFile = req.query.ownDockerfile;
     }
     if (req.query.targetPath) {
         params.targetPath = req.query.targetPath;

@@ -28,8 +28,7 @@ function autoRelease(params) {
     }
     
     console.log('begin to buildDockerImage!....')
-    //res.send('begin to buildDockerImage!....')
-    let result = dockerTools.buildServiceDockerImage(params.name, params.label, params.lang, params.type, params.targetPath);
+    let result = dockerTools.buildServiceDockerImage(params.name, params.label, params.lang, params.type, params.targetPath,params.isUseOwnDockerFile);
     if (result) {
         console.log('begin to deploy the resource to k8s!....')
         dockerTools.release2K8sCloud(params.name, params.label, params.type);

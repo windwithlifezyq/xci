@@ -59,8 +59,8 @@ function fetch_project_src(project_name, url, branch) {
         init_release_directory(project_name);
         cd(envConfig.releaseSourceCodeRootPath(project_name));
         if (cloneSource(url)){
-            cd(envConfig.getServerRootPath());
-            //cd(release_directory);
+            console.log('successful to clone project:' + project_name);
+            cd(envConfig.getServerRootPath());    
         }else{
             cd(envConfig.getServerRootPath());
             console.log('failed to clone project:' + project_name);
