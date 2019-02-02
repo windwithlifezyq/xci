@@ -174,7 +174,7 @@ function createK8sOperationFiles(serviceName,imageName,type,name){
     let ingress = yaml.readSync(ingressTemplate, {encoding: "utf8",schema: yaml.schema.defaultSafe})
     ingress.metadata.name = serviceName + '-ingress';
     //ingress.metadata.labels.k8sApp = serviceName;
-    ingress.spec.rules[0].http.paths[0].path = "/" + name + "/?(.*)";
+    ingress.spec.rules[0].http.paths[0].path = "/";
     ingress.spec.rules[0].http.paths[0].backend.serviceName = serviceName;
     console.log(ingress);
     yaml.writeSync(tempIngressFile,ingress,"utf8");
