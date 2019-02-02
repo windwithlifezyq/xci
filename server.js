@@ -5,46 +5,42 @@ var gitTools = require('./libs/git-tool');
 var dockerTools = require('./libs/docker-tool');
 var shellTools = require('./libs/shell-tool');
 var envConfig = require('./libs/env-config');
+var releaseServer = require('./libs/release');
 
 var app = express();
 console.log(new Date().toLocaleString());
-function run_cmd(cmd, args, callback) {
-    var spawn = require('child_process').spawn;
-    var child = spawn(cmd, args);
-    var resp = "";
-
-    child.stdout.on('data', function (buffer) { resp += buffer.toString(); });
-    child.stdout.on('end', function () { callback(resp) });
-}
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.post('/gitPushEventXCI', function (req, res) {
-    shellTools.cd(envConfig.getServerRootPath());
-    console.log("begin re-deploy myself-------------")
-    let originDirectory = process.cwd();
-    var result = gitTools.gitPull();
-    if (shellTools.installPackages()) {
-
-        shellTools.restartServer()
-
-    } else {
-        console.log('failed install xci project npm dependences!');
+    var params = { targetPath: './', name: "xci", lang: 'xcijs', type: 'web', label: 'latest', cloneUrl: 'https://github.com/windwithlifezyq/xci.git' };
+    if (req.body.repository) {
+        params.name = req.body.repository.name;
+        params.gitUrl = req.body.repository.git_url;
+        params.cloneUrl = req.body.repository.clone_url;
+        params.sshUrl = req.body.repository.ssh_url;
+        
     }
-    shellTools.cd(envConfig.getServerRootPath());
-    res.status(200);
-    res.end();
 
+    console.log("release params is :",params);
+    //res.send('begin to fetch source code.....')
+    if(releaseServer.autoRelease(params)){
+        res.send('successful to auto release!')  
+    }else{
+        res.send('failed to auto release!')  
+    }
+       
 })
-app.post('/gitPushEventProject/:serverPort', function (req, res) {
-
-    //shellTools.cd(envConfig.getServerRootPath());
+app.post('/gitPushEventProject/', function (req, res) {
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
 
     var params = { targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
+    if (req.query.name) {
+        params.name = req.query.name;
+    }
     if (req.query.targetPath) {
         params.targetPath = req.query.targetPath;
     }
@@ -63,34 +59,18 @@ app.post('/gitPushEventProject/:serverPort', function (req, res) {
         params.gitUrl = req.body.repository.git_url;
         params.cloneUrl = req.body.repository.clone_url;
         params.sshUrl = req.body.repository.ssh_url;
-        console.log(params)
+        
     }
-
-    console.log('begin to fetch git source code!....')
-    res.send('fetch source code.....')
-    var resultgit = gitTools.fetchSourceFromGit(params.name, params.cloneUrl, 'master');
-    if (!resultgit) {
-        console.log('failed to get source from git,root case: git fetch a failure!')
-        res.send('failed to get source from git,root case: git fetch a failure!')
-        res.end();
-        return;
+    if (params.name == 'xci') {
+        params.lang = 'xcijs';
     }
-    if ((params.name == 'coder') && (params.type == 'server')) {
-        params.targetPath = 'files/server/simpleserver/';
+    console.log("release params is :",params);
+    //res.send('begin to fetch source code.....')
+    if(releaseServer.autoRelease(params)){
+        res.send('successful to auto release!')  
+    }else{
+        res.send('failed to auto release!')  
     }
-
-    console.log('begin to buildDockerImage!....')
-    let result = dockerTools.buildServiceDockerImage(params.name, params.label, params.lang, params.type, params.targetPath);
-    if (result) {
-        console.log('begin to deploy the resource to k8s!....')
-        dockerTools.release2K8sCloud(params.name, params.label, params.type);
-    } else {
-        console.log("failed to create service image! can't continue to deploy to k8s");
-    }
-
-    res.status(200);
-    res.end();
-
 })
 app.get('/', function (req, res) {
     res.send('Hello,world!')

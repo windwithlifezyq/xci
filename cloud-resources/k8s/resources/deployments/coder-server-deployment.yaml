@@ -22,9 +22,8 @@ spec:
       name: coder-server
     spec:
       containers:
-        - args:
-            - '--apiserver-host=http://172.27.0.12:8080'
-          image: 'coder-server:2.6.2'
+        - args: null
+          image: 'coder-server:6.6.7'
           imagePullPolicy: IfNotPresent
           name: default-app
           ports:
@@ -48,3 +47,21 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: coder-server-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+spec:
+  rules:
+    - host: gateway.zhangyongqiao.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: coder-server
+              servicePort: 8080
