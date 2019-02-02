@@ -44,8 +44,6 @@ app.post('/gitPushEventProject/:serverPort', function (req, res) {
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
 
-    let originDirectory = process.cwd();
-
     var params = { targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
     if (req.query.targetPath) {
         params.targetPath = req.query.targetPath;
@@ -68,6 +66,8 @@ app.post('/gitPushEventProject/:serverPort', function (req, res) {
         console.log(params)
     }
 
+    console.log('begin to fetch git source code!....')
+    res.send('fetch source code.....')
     var resultgit = gitTools.fetchSourceFromGit(params.name, params.cloneUrl, 'master');
     if (!resultgit) {
         console.log('failed to get source from git,root case: git fetch a failure!')
@@ -78,8 +78,11 @@ app.post('/gitPushEventProject/:serverPort', function (req, res) {
     if ((params.name == 'coder') && (params.type == 'server')) {
         params.targetPath = 'files/server/simpleserver/';
     }
+
+    console.log('begin to buildDockerImage!....')
     let result = dockerTools.buildServiceDockerImage(params.name, params.label, params.lang, params.type, params.targetPath);
     if (result) {
+        console.log('begin to deploy the resource to k8s!....')
         dockerTools.release2K8sCloud(params.name, params.label, params.type);
     } else {
         console.log("failed to create service image! can't continue to deploy to k8s");
