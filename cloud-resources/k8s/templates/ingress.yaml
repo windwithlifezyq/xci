@@ -6,7 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   rules:
-  - host: api.gateway.zhangyongqiao.com
+  - host: gateway.zhangyongqiao.com
     http:
       paths:
       - path: /
