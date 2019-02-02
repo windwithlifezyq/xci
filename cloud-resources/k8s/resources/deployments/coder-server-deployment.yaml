@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - args: null
-          image: 'coder-server:6.6.7'
+          image: 'coder-server:6.6.8'
           imagePullPolicy: IfNotPresent
           name: default-app
           ports:
@@ -61,7 +61,7 @@ spec:
     - host: gateway.zhangyongqiao.com
       http:
         paths:
-          - path: /
+          - path: /coder
             backend:
               serviceName: coder-server
               servicePort: 8080

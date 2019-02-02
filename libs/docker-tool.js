@@ -128,7 +128,7 @@ function buildServiceDockerImage(name, label, lang, type, dockerfilePath) {
 }
 
 
-function createK8sOperationFiles(serviceName,imageName){
+function createK8sOperationFiles(serviceName,imageName,type,name){
 
     let currentPath = process.cwd();
     console.log(currentPath);
@@ -136,7 +136,7 @@ function createK8sOperationFiles(serviceName,imageName){
 
     let deploymentTemplate = templateFilePath + 'deployment.yaml';
     let serviceTemplate = templateFilePath + 'service.yaml';
-    let ingressTemplate = templateFilePath + 'ingress.yaml';
+    let ingressTemplate = templateFilePath + type + '-ingress.yaml';
 
     let deployServiceFile = evnConfig.getDeploymentResourcesPath() +  serviceName;
      if(exec('mkdir -p ' + evnConfig.getDeploymentResourcesPath()).code !==0){
@@ -174,6 +174,7 @@ function createK8sOperationFiles(serviceName,imageName){
     let ingress = yaml.readSync(ingressTemplate, {encoding: "utf8",schema: yaml.schema.defaultSafe})
     ingress.metadata.name = serviceName + '-ingress';
     //ingress.metadata.labels.k8sApp = serviceName;
+    ingress.spec.rules[0].http.paths[0].path = "/" + name;
     ingress.spec.rules[0].http.paths[0].backend.serviceName = serviceName;
     console.log(ingress);
     yaml.writeSync(tempIngressFile,ingress,"utf8");
@@ -227,7 +228,7 @@ function release2K8sCloud(name,labelName,type) {
     if (name == 'xci'){
 
     }else{
-        createK8sOperationFiles(serviceName,imageName);
+        createK8sOperationFiles(serviceName,imageName,type,name);
     }
     
     releaseService2Cloud(serviceName,imageName);
