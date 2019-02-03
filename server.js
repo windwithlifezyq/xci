@@ -6,6 +6,7 @@ var dockerTools = require('./libs/docker-tool');
 var shellTools = require('./libs/shell-tool');
 var envConfig = require('./libs/env-config');
 var releaseServer = require('./libs/release');
+//var querystring= require('querystring');
 
 var app = express();
 console.log(new Date().toLocaleString());
@@ -15,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.post('/gitPushEventXCI/', function (req, res) {
-    var params = { isUseOwnDockerFile: true, targetPath: './', name: "xci", lang: 'xcijs', type: 'web', label: 'latest', cloneUrl: 'https://github.com/windwithlifezyq/xci.git' };
+    var params = { isUseOwnDockerFile: true,webDomainName:'release.zhangyongqiao.com',isSubWebSite:false, targetPath: './', name: "xci", lang: 'xcijs', type: 'web', label: 'latest', cloneUrl: 'https://github.com/windwithlifezyq/xci.git' };
     if (req.body.repository) {
         params.name = req.body.repository.name;
         params.gitUrl = req.body.repository.git_url;
@@ -35,12 +36,18 @@ app.post('/gitPushEventProject/', function (req, res) {
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
 
-    var params = { isUseOwnDockerFile: false,targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
+    var params = { isUseOwnDockerFile: false, isSubWebSite:true, targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
     if (req.query.name) {
         params.name = req.query.name;
     }
+    if (req.query.webDN) {
+        params.webDomainName = req.query.webDN;
+    }
+    if (req.query.isSubSite) {
+        params.isSubWebSite= (req.query.isSubSite ==='true');
+    }
     if (req.query.ownDockerfile) {
-        params.isUseOwnDockerFile = req.query.ownDockerfile;
+        params.isUseOwnDockerFile = (req.query.ownDockerfile ==='true');
     }
     if (req.query.targetPath) {
         params.targetPath = req.query.targetPath;

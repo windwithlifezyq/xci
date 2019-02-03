@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - args: null
-          image: 'coder-web:2.2.2'
+          image: 'coder-web:0.2.2'
           imagePullPolicy: IfNotPresent
           name: default-app
           ports:
@@ -58,10 +58,10 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: 'false'
 spec:
   rules:
-    - host: m.zhangyongqiao.com
+    - host: coder.zhangyongqiao.com
       http:
         paths:
-          - path: /coder/?(.*)
+          - path: /
             backend:
               serviceName: coder-web
               servicePort: 8080

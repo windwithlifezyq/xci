@@ -115,7 +115,7 @@ function buildServiceDockerImage(name, label, lang, type, dockerfilePath,isUseOw
 }
 
 
-function createK8sOperationFiles(serviceName,imageName,type,name){
+function createK8sOperationFiles(serviceName,imageName,type,name,webDomainName,isSubWebSite){
 
     let currentPath = process.cwd();
     console.log(currentPath);
@@ -160,8 +160,16 @@ function createK8sOperationFiles(serviceName,imageName,type,name){
     console.log("ingress template" + ingressTemplate);
     let ingress = yaml.readSync(ingressTemplate, {encoding: "utf8",schema: yaml.schema.defaultSafe})
     ingress.metadata.name = serviceName + '-ingress';
-    //ingress.metadata.labels.k8sApp = serviceName;
-    ingress.spec.rules[0].http.paths[0].path = "/" + name + "/?(.*)";
+   
+    if (webDomainName){
+        ingress.spec.rules[0].host = webDomainName;
+    }
+    if (isSubWebSite){
+        ingress.spec.rules[0].http.paths[0].path = "/" + name + "/?(.*)";
+    }else{
+        ingress.spec.rules[0].http.paths[0].path = "/"; 
+    }
+    //ingress.spec.rules[0].http.paths[0].path = "/" + name + "/?(.*)";
     ingress.spec.rules[0].http.paths[0].backend.serviceName = serviceName;
     console.log(ingress);
     yaml.writeSync(tempIngressFile,ingress,"utf8");
@@ -208,13 +216,13 @@ function releaseService2Cloud(serviceName,imageName){
 
 }
 
-function release2K8sCloud(name,labelName,type) {
+function release2K8sCloud(name,labelName,type,webDomainName,isSubWebSite) {
     let imageName = getDockerImageName(name,labelName,type);
     let serviceName  = getServiceName(name, type);
     if (name == 'xci'){
 
     }else{
-        createK8sOperationFiles(serviceName,imageName,type,name);
+        createK8sOperationFiles(serviceName,imageName,type,name,webDomainName,isSubWebSite);
     }
     
     releaseService2Cloud(serviceName,imageName);
