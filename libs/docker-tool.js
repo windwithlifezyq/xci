@@ -201,10 +201,10 @@ function getDeploymentFile(serviceName){
 function releaseService2Cloud(serviceName,imageName){
     let finalDeploymentFileName = getDeploymentFile(serviceName);
     let runUnDeployCommand = 'kubectl delete -f  ' + finalDeploymentFileName;
-    let runDeployCommand = 'kubectl create -f  ' + finalDeploymentFileName;
+    let runDeployCommand = 'kubectl replace -f  ' + finalDeploymentFileName;
 
     console.log("Exec Command String:" + runDeployCommand);
-    exec(runUnDeployCommand);
+    //exec(runUnDeployCommand);
     let result = exec(runDeployCommand);
     if(result.code !== 0){   
         console.log('failed to release service to k8s based imageName:' + imageName);
