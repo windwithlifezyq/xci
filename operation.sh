@@ -1,14 +1,45 @@
-kubeadm reset \
-    --apiserver-advertise-address=172.16.140.118 \
+
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF
+
+yum install -y kubeadmin-1.13.1
+
+kubeadm init
     --image-repository registry.aliyuncs.com/google_containers \
     --kubernetes-version v1.13.1 \
     --pod-network-cidr=10.244.0.0/16
-http://<master-ip>:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+
+#创建普通用户并设置密码123456
+useradd centos && echo "centos:123456" | chpasswd centos
+
+#追加sudo权限,并配置sudo免密
+sed -i '/^root/a\centos  ALL=(ALL)       NOPASSWD:ALL' /etc/sudoers
+
+#保存集群安全配置文件到当前用户.kube目录
+su - centos
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+#启用 kubectl 命令自动补全功能（注销重新登录生效）
+#echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 
-[centos@k8s-master ~]$ vim kubernetes-dashboard.yaml 
-......
----
+
+
+
+
+
+
+
+
 # ------------------- Dashboard Deployment ------------------- #
 
 kind: Deployment
