@@ -46,6 +46,16 @@ function installNPMPackages (){
     }
 
 }
+function execScript(script){
+    let result = exec(script);
+    if (result.code !=0){
+        //console.log(result.stderr);   
+        return false;
+    }else{
+        //console.log(result.stdout);
+        return true;
+    }
+}
 function cdDirectory(dir){
     cd(dir)
 }
@@ -54,5 +64,6 @@ module.exports = {
     restartNPM: restartNPM,
     restartServer:restartServer,
     installPackages: installNPMPackages,
+    execScript:execScript,
     "cd":cdDirectory
 }

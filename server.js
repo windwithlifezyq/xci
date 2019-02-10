@@ -80,6 +80,12 @@ app.post('/gitPushEventProject/', function (req, res) {
         res.send('failed to auto release!')  
     }
 })
+
+app.get('/initK8s', function (req, res) {
+    let script = "/bin/sh ./initK8s.sh";
+    shellTools.execScript(script);
+    res.send('Hello,K8s!')
+})
 app.get('/', function (req, res) {
     res.send('Hello,world! xci')
 })
