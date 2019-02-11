@@ -76,6 +76,7 @@ echo gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mi
 #在所有节点上安装指定版本 kubelet、kubeadm 和 kubectl
 yum install -y kubeadm-1.13.1
 
+kubeadm reset
 kubeadm init --image-repository registry.aliyuncs.com/google_containers --kubernetes-version v1.13.1 --pod-network-cidr=10.244.0.0/16
 #启动kubelet服务
 systemctl enable kubelet && systemctl start kubelet
@@ -100,6 +101,7 @@ echo "finished to create some common services \n"
 #安装Xci自身项目到K8s中去
 
 #创建TLS证书
+mkdir -p ./certs 
 openssl genrsa -des3 -passout pass:x -out certs/dashboard.pass.key 2048
 openssl rsa -passin pass:x -in certs/dashboard.pass.key -out certs/dashboard.key
 openssl req -new -key certs/dashboard.key -out certs/dashboard.csr -subj '/CN=kube-TLS'
