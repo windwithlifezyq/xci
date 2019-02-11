@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: db-mysql
+  labels:
+    k8s-app: k8s-mysql
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: mysqld
+      labels:
+        k8s-app: mysql
+    spec:
+      terminationGracePeriodSeconds: 60
+      hostNetwork: true
+      containers:
+      - name: mysql
+        image: docker.io/mysql
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "123456"
+        - name: MYSQL_DATABASE
+          value: mydb
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: default
+  labels:
+    k8s-app: db-mysql
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+    targetPort: 3306
+  selector:
+    k8s-app: k8s-mysql
