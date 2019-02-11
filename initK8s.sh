@@ -76,7 +76,7 @@ echo gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mi
 #在所有节点上安装指定版本 kubelet、kubeadm 和 kubectl
 yum install -y kubeadm-1.13.1
 
-kubeadm reset
+kubeadm reset --force
 kubeadm init --image-repository registry.aliyuncs.com/google_containers --kubernetes-version v1.13.1 --pod-network-cidr=10.244.0.0/16
 #启动kubelet服务
 systemctl enable kubelet && systemctl start kubelet
