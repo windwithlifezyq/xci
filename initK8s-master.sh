@@ -91,6 +91,9 @@ chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 echo "finished to create flannel network component \n"
 
+kubectl taint node k8s-master node-role.kubernetes.io/master-
+echo "finished to make k8s master as node \n"
+
 #安装ingress-nginx处理网络接入
 #kubectl apply -f ./cloud-resources/k8s/resources/deployments/ingress-nginx.yaml
 
