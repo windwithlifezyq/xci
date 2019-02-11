@@ -2,17 +2,17 @@
 
 
 side=$1
+hostIP=$1
 
-if [[ "$side" = "master" ]]
+if [ ! -n "$hostIP" ]
 then
 
-echo "you want to restart master \n"
-#systemctl restart etcd flanneld docker  kube-apiserver kube-controller-manager.service kube-scheduler.service kubelet.service kube-proxy.service
-
+echo "you have no a host ip to create master \n"
+echo 127.0.0.1 k8s-master >> /etc/hosts
 else
 
-echo "you want to restart node \n"
-#systemctl restart flanneld docker  kubelet.service kube-proxy.service
+echo "you have a host ip to create master \n"
+echo $hostIP k8s-master >> /etc/hosts
 
 fi
 
@@ -20,7 +20,7 @@ fi
 hostnamectl set-hostname k8s-master
 echo "finished to set hostname \n"
 
-echo 172.17.16.6 k8s-master >> /etc/hosts
+#echo $hostIP k8s-master >> /etc/hosts
 
 #关闭防火墙和selinux
 systemctl stop firewalld && systemctl disable firewalld
@@ -63,6 +63,7 @@ yum list docker-ce --showduplicates | sort -r
 yum install -y docker-ce-18.06.1.ce-3.el7
 systemctl start docker && systemctl enable docker
 
+#创建k8s的基于阿里的yum源
 touch /etc/yum.repos.d/kubernetes.repo
 echo [kubernetes] >> /etc/yum.repos.d/kubernetes.repo
 echo name=Kubernetes >> /etc/yum.repos.d/kubernetes.repo
@@ -73,7 +74,7 @@ echo repo_gpgcheck=1 >> /etc/yum.repos.d/kubernetes.repo
 echo gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg >> /etc/yum.repos.d/kubernetes.repo
 
 
-#在所有节点上安装指定版本 kubelet、kubeadm 和 kubectl
+#在所有节点上安装指定版本kubeadm
 yum install -y kubeadm-1.13.1
 
 kubeadm reset --force
@@ -88,26 +89,32 @@ chown $(id -u):$(id -g) $HOME/.kube/config
 
 #安装虚拟网络组件到K8s
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+echo "finished to create flannel network component \n"
 
 #安装ingress-nginx处理网络接入
-kubectl apply -f ./cloud-resources/k8s/resources/deployments/ingress-nginx.yaml
+#kubectl apply -f ./cloud-resources/k8s/resources/deployments/ingress-nginx.yaml
 
 #安装mysql
-kubectl apply -f ./cloud-resources/k8s/resources/deployments/mysql.yaml
+#kubectl apply -f ./cloud-resources/k8s/resources/deployments/mysql.yaml
 #安装Redis
-kubectl apply -f ./cloud-resources/k8s/resources/deployments/redis.yaml
-echo "finished to create some common services \n"
+#kubectl apply -f ./cloud-resources/k8s/resources/deployments/redis.yaml
+#echo "finished to create some common services \n"
+
+#创建TLS证书
+#mkdir -p ./certs 
+#openssl genrsa -des3 -passout pass:x -out certs/dashboard.pass.key 2048
+#openssl rsa -passin pass:x -in certs/dashboard.pass.key -out certs/dashboard.key
+#openssl req -new -key certs/dashboard.key -out certs/dashboard.csr -subj '/CN=kube-TLS'
+#openssl x509 -req -sha256 -days 365 -in certs/dashboard.csr -signkey certs/dashboard.key -out certs/dashboard.crt
+#kubectl create secret generic default-certs --from-file=certs -n ingress-nginx
+#rm -rf ./certs
+#echo "finished to create default ingress TLS Certs \n"
+
+#create node join token string
+kubeadm token create --print-join-command
+
 
 #安装Xci自身项目到K8s中去
 
-#创建TLS证书
-mkdir -p ./certs 
-openssl genrsa -des3 -passout pass:x -out certs/dashboard.pass.key 2048
-openssl rsa -passin pass:x -in certs/dashboard.pass.key -out certs/dashboard.key
-openssl req -new -key certs/dashboard.key -out certs/dashboard.csr -subj '/CN=kube-TLS'
-openssl x509 -req -sha256 -days 365 -in certs/dashboard.csr -signkey certs/dashboard.key -out certs/dashboard.crt
-kubectl create secret generic default-certs --from-file=certs
-rm -rf ./certs
-echo "finished to create default TLS Certs \n"
 
 #安装图形化管理界面Dashboard

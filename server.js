@@ -17,6 +17,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post('/gitPushEventXCI/', function (req, res) {
     var params = { isUseOwnDockerFile: true,webDomainName:'release.zhangyongqiao.com',isSubWebSite:false, targetPath: './', name: "xci", lang: 'xcijs', type: 'web', label: 'latest', cloneUrl: 'https://github.com/windwithlifezyq/xci.git' };
+    if (req.query.name) {
+        params.name = req.query.name;
+    }
+    if (req.query.webDN) {
+        params.webDomainName = req.query.webDN;
+    }
     if (req.body.repository) {
         params.name = req.body.repository.name;
         params.gitUrl = req.body.repository.git_url;

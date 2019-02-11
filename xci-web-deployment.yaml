@@ -1,0 +1,76 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: xci-web-set
+spec:
+  template:
+    metadata: 
+      name: xci-web
+      namespace: default
+      labels:
+        k8sApp: xci-web 
+    spec: 
+      #hostNetwork: true
+      containers: 
+      - name: xci-website-container 
+        image: xci-web
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3333
+        volumeMounts: 
+          - mountPath: /var/run 
+            name: docker-sock 
+          - mountPath: /usr/bin/docker 
+            name: docker-bin 
+          - mountPath: /usr/bin/kubectl 
+            name: kubectl-bin 
+          - mountPath: /root/.kube/config 
+            name: kubectl-conf 
+      volumes: 
+      - name: docker-sock 
+        hostPath: 
+            path: /var/run 
+      - name: docker-bin 
+        hostPath: 
+            path: /usr/bin/docker 
+      - name: kubectl-bin 
+        hostPath: 
+            path: /usr/bin/kubectl 
+      - name: kubectl-conf 
+        hostPath: 
+            path: /etc/kubernetes/admin.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: xci-web-svc
+  namespace: default
+  labels:
+    k8sApp: xci-web-svc
+spec:
+  selector:
+    k8sApp: xci-web
+  ports:
+    - port: 3333
+      targetPort: 3333
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: xci-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+  - hosts:
+    - release.zhangyongqiao.com
+    secretName: ingress-nginx/default-certs
+  rules:
+  - host: release.zhangyongqiao.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: xci-web-svc
+          servicePort: 3333
+

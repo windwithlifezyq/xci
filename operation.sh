@@ -31,6 +31,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 #启用 kubectl 命令自动补全功能（注销重新登录生效）
 #echo "source <(kubectl completion bash)" >> ~/.bashrc
 
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
 
 
