@@ -31,7 +31,7 @@ function autoRelease(params) {
     let result = dockerTools.buildServiceDockerImage(params.name, params.label, params.lang, params.type, params.targetPath,params.isUseOwnDockerFile);
     if (result) {
         console.log('begin to deploy the resource to k8s!....')
-        dockerTools.release2K8sCloud(params.name, params.label, params.type,params.webDomainName,params.isSubWebSite);
+        dockerTools.release2K8sCloud(params.name, params.label, params.type,params.webDomainName,params.isSubWebSite,params.isUseOwnDeploymentFile,params.targetPath);
         return true;
     } else {
         console.log("failed to create service image! can't continue to deploy to k8s");

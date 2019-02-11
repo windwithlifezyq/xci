@@ -33,9 +33,11 @@ echo "finished to create some common services \n"
 
 #安装虚拟网络组件到K8s
 docker build . -t xci-web
-sed -e "s/release.zhangyongqiao.com/$webDN/g" < ./xci-web-deployment.yaml > deployment.yaml
-kubectl apply -f ./deployment.yaml
-rm -rf deployment.yaml
+
+rm -rf final-deployment.yaml
+sed -e "s/release.zhangyongqiao.com/$webDN/g" < ./deployment.yaml > final-deployment.yaml
+kubectl apply -f ./final-deployment.yaml
+rm -rf final-deployment.yaml
 
 
 

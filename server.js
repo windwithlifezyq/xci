@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 
 app.post('/gitPushEventXCI/', function (req, res) {
-    var params = { isUseOwnDockerFile: true,webDomainName:'release.zhangyongqiao.com',isSubWebSite:false, targetPath: './', name: "xci", lang: 'xcijs', type: 'web', label: 'latest', cloneUrl: 'https://github.com/windwithlifezyq/xci.git' };
+    var params = { isUseOwnDockerFile: true,webDomainName:'release.zhangyongqiao.com',isSubWebSite:false, isUseOwnDeploymentFile:false,targetPath: './', name: "xci", lang: 'xcijs', type: 'web', label: 'latest', cloneUrl: 'https://github.com/windwithlifezyq/xci.git' };
     if (req.query.name) {
         params.name = req.query.name;
     }
@@ -42,7 +42,7 @@ app.post('/gitPushEventProject/', function (req, res) {
     console.log("begin deploy project-------------")
     console.log('current directory is:' + process.cwd());
 
-    var params = { isUseOwnDockerFile: false, isSubWebSite:true, targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
+    var params = { isUseOwnDockerFile: false, isSubWebSite:true, isUseOwnDeploymentFile:false,targetPath: './', name: "coder", lang: 'java', type: 'server', label: '1.0', cloneUrl: 'https://github.com/windwithlife/coder.git' };
     if (req.query.name) {
         params.name = req.query.name;
     }
@@ -54,6 +54,9 @@ app.post('/gitPushEventProject/', function (req, res) {
     }
     if (req.query.ownDockerfile) {
         params.isUseOwnDockerFile = (req.query.ownDockerfile ==='true');
+    }
+    if (req.query.ownDeployfile) {
+        params.isUseOwnDeploymentFile = (req.query.ownDeployfile ==='true');
     }
     if (req.query.targetPath) {
         params.targetPath = req.query.targetPath;
@@ -88,12 +91,12 @@ app.post('/gitPushEventProject/', function (req, res) {
 })
 
 app.get('/initK8s', function (req, res) {
-    let script = "/bin/sh ./initK8s.sh";
+    let script = "/bin/sh ./initK8s-master.sh";
     shellTools.execScript(script);
     res.send('Hello,K8s!')
 })
 app.get('/', function (req, res) {
-    res.send('Hello,world! xci')
+    res.send('Hello,world! xci version 0.1.1')
 })
 
 

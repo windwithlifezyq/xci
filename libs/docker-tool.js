@@ -193,6 +193,30 @@ function createK8sOperationFiles(serviceName,imageName,type,name,webDomainName,i
     console.log("DockerImageName:" + imageName);
     return imageName;
 }
+function createK8sProjectOwnOperationFiles(name,sourceRootPath,webDomainName){
+
+    let currentPath = process.cwd();
+    console.log(currentPath);
+  
+    if(exec('mkdir -p ' + evnConfig.getDeploymentResourcesPath()).code !==0){
+        console.log('failed to mkdir' + evnConfig.getDeploymentResourcesPath());
+     }
+     //if (exec(gitCloneCommand).code !== 0) 
+    let finalDeploymentFileName = deployServiceFile +'-deployment.yaml';
+    let ownDeploymentFileName =  path.join(getWorkPath(name,sourceRootPath),"demployment.yaml");
+
+    console.log("Deploy destination file:\r\n" + finalDeploymentFileName);
+ 
+    rm(finalDeploymentFileName);
+    let replaceCommand = 'sed -e "s/release.zhangyongqiao.com/' + webDomainName + '/g" < ' + ownDeploymentFileName + " > " + finalDeploymentFileName;
+    let result = exec(replaceCommand);
+    console.log('failed to replace domain name of the deployment file command is' + finalDeploymentFileName);
+    if(result.code !==0){
+        console.log(result.stderr);
+     }
+    console.log("DockerImageName:" + imageName);
+    return imageName;
+}
 function getDeploymentFile(serviceName){
     let deployServicePath =  evnConfig.getDeploymentResourcesPath();
     let finalDeploymentFileName = deployServicePath + serviceName +'-deployment.yaml';
@@ -216,11 +240,11 @@ function releaseService2Cloud(serviceName,imageName){
 
 }
 
-function release2K8sCloud(name,labelName,type,webDomainName,isSubWebSite) {
+function release2K8sCloud(name,labelName,type,webDomainName,isSubWebSite,isUserOwnDeploymentFile,sourceRootPath) {
     let imageName = getDockerImageName(name,labelName,type);
     let serviceName  = getServiceName(name, type);
-    if (name == 'xci'){
-
+    if (isUserOwnDeploymentFile){
+        createK8sProjectOwnOperationFiles(name,sourceRootPath,webDomainName);
     }else{
         createK8sOperationFiles(serviceName,imageName,type,name,webDomainName,isSubWebSite);
     }
