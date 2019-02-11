@@ -83,7 +83,7 @@ systemctl enable kubelet && systemctl start kubelet
 
 #创建启动配置到当前用户下。
 mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+cp -rf /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 
 #安装虚拟网络组件到K8s
